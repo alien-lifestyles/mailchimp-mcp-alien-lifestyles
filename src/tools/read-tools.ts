@@ -176,10 +176,10 @@ export async function handleReadTool(
         offset: z.number().int().min(0).optional(),
       });
       const params = schema.parse(args);
+      // Default to reasonable limit to prevent large responses
+      const count = params.count ?? 50;
       const queryParams = new URLSearchParams();
-      if (params.count !== undefined) {
-        queryParams.append('count', params.count.toString());
-      }
+      queryParams.append('count', count.toString());
       if (params.offset !== undefined) {
         queryParams.append('offset', params.offset.toString());
       }
@@ -204,13 +204,13 @@ export async function handleReadTool(
         offset: z.number().int().min(0).optional(),
       });
       const params = schema.parse(args);
+      // Default to 50 members to prevent overly large responses
+      const count = params.count ?? 50;
       const queryParams = new URLSearchParams();
       if (params.status) {
         queryParams.append('status', params.status);
       }
-      if (params.count !== undefined) {
-        queryParams.append('count', params.count.toString());
-      }
+      queryParams.append('count', count.toString());
       if (params.offset !== undefined) {
         queryParams.append('offset', params.offset.toString());
       }
@@ -227,6 +227,8 @@ export async function handleReadTool(
         offset: z.number().int().min(0).optional(),
       });
       const params = schema.parse(args);
+      // Default to reasonable limit to prevent large responses
+      const count = params.count ?? 50;
       const queryParams = new URLSearchParams();
       if (params.status) {
         queryParams.append('status', params.status);
@@ -234,9 +236,7 @@ export async function handleReadTool(
       if (params.since_send_time) {
         queryParams.append('since_send_time', params.since_send_time);
       }
-      if (params.count !== undefined) {
-        queryParams.append('count', params.count.toString());
-      }
+      queryParams.append('count', count.toString());
       if (params.offset !== undefined) {
         queryParams.append('offset', params.offset.toString());
       }
