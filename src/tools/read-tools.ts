@@ -3,6 +3,13 @@ import { z } from 'zod';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { MailchimpClient } from '../lib/mailchimp-client.js';
 
+// Mailchimp IDs are alphanumeric with hyphens, typically 10-40 chars
+const mailchimpIdRegex = /^[a-zA-Z0-9-]{1,64}$/;
+
+const mailchimpIdSchema = z.string().min(1).max(64).regex(mailchimpIdRegex, {
+  message: 'Invalid Mailchimp ID format',
+});
+
 export function createReadTools(client: MailchimpClient): Tool[] {
   return [
     {
@@ -183,7 +190,7 @@ export async function handleReadTool(
 
     case 'mc_getAudience': {
       const schema = z.object({
-        audienceId: z.string().min(1),
+        audienceId: mailchimpIdSchema,
       });
       const params = schema.parse(args);
       return await client.get(`/lists/${params.audienceId}`);
@@ -191,7 +198,7 @@ export async function handleReadTool(
 
     case 'mc_listMembers': {
       const schema = z.object({
-        audienceId: z.string().min(1),
+        audienceId: mailchimpIdSchema,
         status: z.enum(['subscribed', 'unsubscribed', 'cleaned', 'pending', 'transactional']).optional(),
         count: z.number().int().min(1).max(1000).optional(),
         offset: z.number().int().min(0).optional(),
@@ -240,7 +247,7 @@ export async function handleReadTool(
 
     case 'mc_getCampaign': {
       const schema = z.object({
-        campaignId: z.string().min(1),
+        campaignId: mailchimpIdSchema,
       });
       const params = schema.parse(args);
       return await client.get(`/campaigns/${params.campaignId}`);
@@ -248,7 +255,7 @@ export async function handleReadTool(
 
     case 'mc_getCampaignReport': {
       const schema = z.object({
-        campaignId: z.string().min(1),
+        campaignId: mailchimpIdSchema,
       });
       const params = schema.parse(args);
       return await client.get(`/reports/${params.campaignId}`);
@@ -256,7 +263,7 @@ export async function handleReadTool(
 
     case 'mc_getMember': {
       const schema = z.object({
-        audienceId: z.string().min(1),
+        audienceId: mailchimpIdSchema,
         email: z.string().email(),
       });
       const params = schema.parse(args);

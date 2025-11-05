@@ -11,7 +11,12 @@ import { createWriteTools, handleWriteTool } from './tools/write-tools.js';
 import http from 'http';
 
 const API_KEY = process.env.MAILCHIMP_API_KEY;
-const SERVER_PREFIX = process.env.MAILCHIMP_SERVER_PREFIX || 'us21';
+// Validate server prefix to prevent SSRF
+const VALID_PREFIXES = ['us1', 'us2', 'us3', 'us4', 'us5', 'us6', 'us7', 'us8', 'us9', 'us10', 'us11', 'us12', 'us13', 'us14', 'us15', 'us16', 'us17', 'us18', 'us19', 'us20', 'us21'];
+const SERVER_PREFIX_INPUT = process.env.MAILCHIMP_SERVER_PREFIX || 'us21';
+const SERVER_PREFIX = VALID_PREFIXES.includes(SERVER_PREFIX_INPUT.toLowerCase()) 
+  ? SERVER_PREFIX_INPUT.toLowerCase() 
+  : 'us21';
 const READONLY = process.env.MAILCHIMP_READONLY !== 'false';
 const CONFIRM_SEND = process.env.CONFIRM_SEND || '';
 const PORT = parseInt(process.env.PORT || '3000', 10);
