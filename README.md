@@ -22,8 +22,8 @@ A Model Context Protocol (MCP) server for integrating Mailchimp with Claude Desk
 
 1. Clone this repository:
 ```bash
-git clone <your-repo-url>
-cd mailchimp-mcp
+git clone https://github.com/alien-lifestyles/mailchimp-mcp-alien-lifestyles.git
+cd mailchimp-mcp-alien-lifestyles
 ```
 
 2. Install dependencies:
