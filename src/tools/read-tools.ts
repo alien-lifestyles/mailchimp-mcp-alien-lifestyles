@@ -843,7 +843,7 @@ export async function handleReadTool(
     case 'mc_listAudiences': {
       const schema = z.object({
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       // Default to reasonable limit to prevent large responses
@@ -871,7 +871,7 @@ export async function handleReadTool(
         audienceId: mailchimpIdSchema,
         status: z.enum(['subscribed', 'unsubscribed', 'cleaned', 'pending', 'transactional']).optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       // Default to 50 members to prevent overly large responses
@@ -895,7 +895,7 @@ export async function handleReadTool(
         status: z.enum(['save', 'paused', 'schedule', 'sending', 'sent']).optional(),
         since_send_time: z.string().optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       // Default to reasonable limit to prevent large responses
@@ -935,7 +935,7 @@ export async function handleReadTool(
     case 'mc_getMember': {
       const schema = z.object({
         audienceId: mailchimpIdSchema,
-        email: z.string().email(),
+        email: z.string().email().max(254), // RFC 5321 maximum email length
       });
       const params = schema.parse(args);
       const emailHash = createHash('md5')
@@ -955,7 +955,7 @@ export async function handleReadTool(
         audienceId: mailchimpIdSchema,
         type: z.enum(['static', 'saved']).optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -985,7 +985,7 @@ export async function handleReadTool(
         audienceId: mailchimpIdSchema,
         segmentId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1003,7 +1003,7 @@ export async function handleReadTool(
       const schema = z.object({
         audienceId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1031,7 +1031,7 @@ export async function handleReadTool(
         audienceId: mailchimpIdSchema,
         type: z.enum(['text', 'number', 'address', 'phone', 'date', 'url', 'imageurl', 'radio', 'dropdown', 'birthday', 'zip']).optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1060,7 +1060,7 @@ export async function handleReadTool(
       const schema = z.object({
         audienceId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1087,7 +1087,7 @@ export async function handleReadTool(
         audienceId: mailchimpIdSchema,
         interestCategoryId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1114,7 +1114,7 @@ export async function handleReadTool(
       const schema = z.object({
         type: z.enum(['user', 'gallery', 'base']).optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1141,7 +1141,7 @@ export async function handleReadTool(
     case 'mc_listTemplateFolders': {
       const schema = z.object({
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1165,7 +1165,7 @@ export async function handleReadTool(
     case 'mc_listAutomations': {
       const schema = z.object({
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1208,7 +1208,7 @@ export async function handleReadTool(
         since_send_time: z.string().optional(),
         before_send_time: z.string().optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1230,7 +1230,7 @@ export async function handleReadTool(
     case 'mc_listBatchOperations': {
       const schema = z.object({
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1256,7 +1256,7 @@ export async function handleReadTool(
         has_unread: z.boolean().optional(),
         list_id: mailchimpIdSchema.optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1289,7 +1289,7 @@ export async function handleReadTool(
       const schema = z.object({
         conversationId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1307,7 +1307,7 @@ export async function handleReadTool(
       const schema = z.object({
         audienceId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1323,7 +1323,7 @@ export async function handleReadTool(
     case 'mc_listStores': {
       const schema = z.object({
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1348,7 +1348,7 @@ export async function handleReadTool(
       const schema = z.object({
         storeId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1375,7 +1375,7 @@ export async function handleReadTool(
         storeId: mailchimpIdSchema,
         customer_id: z.string().optional(),
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;
@@ -1404,7 +1404,7 @@ export async function handleReadTool(
       const schema = z.object({
         storeId: mailchimpIdSchema,
         count: z.number().int().min(1).max(1000).optional(),
-        offset: z.number().int().min(0).optional(),
+        offset: z.number().int().min(0).max(100000).optional(), // Limit to prevent excessive pagination
       });
       const params = schema.parse(args);
       const count = params.count ?? 50;

@@ -22,6 +22,8 @@ const CONFIRM_SEND = process.env.CONFIRM_SEND || '';
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const TRANSPORT_MODE = process.env.TRANSPORT_MODE || 'stdio';
 const MASK_PII = process.env.MAILCHIMP_MASK_PII === 'true';
+// CORS configuration - allow specific origins or default to localhost only
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()).filter(Boolean) || [];
 
 if (!API_KEY) {
   console.error('❌ MAILCHIMP_API_KEY environment variable is required');
@@ -106,14 +108,48 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResponse) {
+  /**
+   * Set CORS headers with security restrictions
+   * Default: Only allow localhost origins for security
+   * Override: Set ALLOWED_ORIGINS environment variable with comma-separated origins
+   */
   const setCors = () => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    
+    // If ALLOWED_ORIGINS is configured, use it
+    if (ALLOWED_ORIGINS.length > 0) {
+      if (origin && ALLOWED_ORIGINS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      // If origin not in allowed list, don't set CORS header (browser will block)
+    } else {
+      // Default: Only allow localhost for development
+      if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+    }
+    
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+  };
+
+  /**
+   * Set security headers to prevent common attacks
+   */
+  const setSecurityHeaders = () => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // Only set HSTS if using HTTPS (skip for local development)
+    if (req.headers['x-forwarded-proto'] === 'https') {
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
   };
 
   if (req.method === 'OPTIONS') {
     setCors();
+    setSecurityHeaders();
     res.writeHead(200);
     res.end();
     return;
@@ -121,6 +157,7 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
 
   if (req.method === 'GET' && (req.url === '/' || req.url === '/health')) {
     setCors();
+    setSecurityHeaders();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
@@ -137,6 +174,7 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
 
   if ((req.method === 'GET' || req.method === 'POST') && req.url === '/sse') {
     setCors();
+    setSecurityHeaders();
     
     // Immediately send headers to establish connection
     res.writeHead(200, {
@@ -384,6 +422,7 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
   }
 
   setCors();
+  setSecurityHeaders();
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Not found' }));
 }

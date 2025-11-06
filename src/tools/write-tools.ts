@@ -114,7 +114,7 @@ export async function handleWriteTool(
         settings: z.object({
           subject_line: z.string().optional(),
           from_name: z.string().optional(),
-          reply_to: z.string().email().optional(),
+          reply_to: z.string().email().max(254).optional(), // RFC 5321 maximum email length
           title: z.string().optional(),
         }),
       });

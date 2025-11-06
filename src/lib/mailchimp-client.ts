@@ -34,6 +34,35 @@ function calculateBackoff(attempt: number, config: RetryConfig): number {
   return delay;
 }
 
+/**
+ * Sanitize error data to prevent information disclosure
+ * Only includes safe error fields that don't expose sensitive API details
+ */
+function sanitizeError(errorData: unknown): string {
+  if (!errorData || typeof errorData !== 'object') {
+    return 'Unknown error';
+  }
+
+  const obj = errorData as Record<string, unknown>;
+  
+  // Only include safe error fields
+  const safeFields = ['detail', 'title', 'status'];
+  const sanitized: Record<string, unknown> = {};
+  
+  for (const field of safeFields) {
+    if (obj[field] !== undefined && obj[field] !== null) {
+      sanitized[field] = obj[field];
+    }
+  }
+
+  // If no safe fields found, return generic message
+  if (Object.keys(sanitized).length === 0) {
+    return 'API request failed';
+  }
+
+  return JSON.stringify(sanitized);
+}
+
 export class MailchimpClient {
   private baseUrl: string;
   private apiKey: string;
@@ -79,7 +108,7 @@ export class MailchimpClient {
 
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            `Rate limit exceeded: ${JSON.stringify(errorData)}`
+            `Rate limit exceeded: ${sanitizeError(errorData)}`
           );
         }
 
@@ -92,14 +121,14 @@ export class MailchimpClient {
 
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            `Server error ${response.status}: ${JSON.stringify(errorData)}`
+            `Server error ${response.status}: ${sanitizeError(errorData)}`
           );
         }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            `API error ${response.status}: ${JSON.stringify(errorData)}`
+            `API error ${response.status}: ${sanitizeError(errorData)}`
           );
         }
 

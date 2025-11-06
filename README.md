@@ -170,6 +170,7 @@ Once set up with Claude Desktop, you can ask:
 | `CONFIRM_SEND` | Required to send campaigns | No | - |
 | `TRANSPORT_MODE` | Transport mode (`stdio` or `http`) | No | `stdio` |
 | `PORT` | HTTP server port (if using HTTP mode) | No | `3000` |
+| `ALLOWED_ORIGINS` | Comma-separated CORS origins (HTTP mode only, empty = localhost only) | No | - |
 
 **Security Recommendations:**
 - Set `MAILCHIMP_MASK_PII=true` to protect personal information
