@@ -1,0 +1,23 @@
+# Create .env.example file manually
+
+Since `.env` files are ignored, create `.env.example` with:
+
+```bash
+# Mailchimp API Configuration
+MAILCHIMP_API_KEY=your_full_api_key_here-us9
+MAILCHIMP_SERVER_PREFIX=us9
+
+# Server Configuration
+MAILCHIMP_READONLY=true
+TRANSPORT_MODE=stdio
+
+# Optional: Required only if you want to send campaigns
+# CONFIRM_SEND=I_KNOW_WHAT_IM_DOING
+```
+
+Then add it to git:
+```bash
+git add .env.example
+git commit -m "Add .env.example template"
+```
+

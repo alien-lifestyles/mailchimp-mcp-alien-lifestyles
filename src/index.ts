@@ -11,11 +11,17 @@ import { createWriteTools, handleWriteTool } from './tools/write-tools.js';
 import http from 'http';
 
 const API_KEY = process.env.MAILCHIMP_API_KEY;
-const SERVER_PREFIX = process.env.MAILCHIMP_SERVER_PREFIX || 'us21';
+// Validate server prefix to prevent SSRF
+const VALID_PREFIXES = ['us1', 'us2', 'us3', 'us4', 'us5', 'us6', 'us7', 'us8', 'us9', 'us10', 'us11', 'us12', 'us13', 'us14', 'us15', 'us16', 'us17', 'us18', 'us19', 'us20', 'us21'];
+const SERVER_PREFIX_INPUT = process.env.MAILCHIMP_SERVER_PREFIX || 'us21';
+const SERVER_PREFIX = VALID_PREFIXES.includes(SERVER_PREFIX_INPUT.toLowerCase()) 
+  ? SERVER_PREFIX_INPUT.toLowerCase() 
+  : 'us21';
 const READONLY = process.env.MAILCHIMP_READONLY !== 'false';
 const CONFIRM_SEND = process.env.CONFIRM_SEND || '';
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const TRANSPORT_MODE = process.env.TRANSPORT_MODE || 'stdio';
+const MASK_PII = process.env.MAILCHIMP_MASK_PII === 'true';
 
 if (!API_KEY) {
   console.error('❌ MAILCHIMP_API_KEY environment variable is required');
@@ -53,12 +59,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const isReadTool = readTools.some(tool => tool.name === name);
     
     if (isReadTool) {
-      const result = await handleReadTool(name, args, client);
+      const result = await handleReadTool(name, args, client, MASK_PII);
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify(result, null, 2),
+            text: JSON.stringify(result), // Compact JSON to reduce response size
           },
         ],
       };
@@ -71,7 +77,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: 'text',
-            text: JSON.stringify(result, null, 2),
+            text: JSON.stringify(result), // Compact JSON to reduce response size
           },
         ],
       };
@@ -190,7 +196,7 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
             try {
               let result: unknown;
               if (isReadTool) {
-                result = await handleReadTool(name, args, client);
+                result = await handleReadTool(name, args, client, MASK_PII);
               } else {
                 result = await handleWriteTool(name, args, client, CONFIRM_SEND);
               }

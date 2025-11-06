@@ -2,6 +2,13 @@ import { z } from 'zod';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { MailchimpClient } from '../lib/mailchimp-client.js';
 
+// Mailchimp IDs are alphanumeric with hyphens, typically 10-40 chars
+const mailchimpIdRegex = /^[a-zA-Z0-9-]{1,64}$/;
+
+const mailchimpIdSchema = z.string().min(1).max(64).regex(mailchimpIdRegex, {
+  message: 'Invalid Mailchimp ID format',
+});
+
 export function createWriteTools(client: MailchimpClient): Tool[] {
   return [
     {
@@ -102,7 +109,7 @@ export async function handleWriteTool(
       const schema = z.object({
         type: z.enum(['regular', 'plaintext', 'absplit', 'rss', 'variate']),
         recipients: z.object({
-          list_id: z.string().min(1),
+          list_id: mailchimpIdSchema,
         }),
         settings: z.object({
           subject_line: z.string().optional(),
@@ -121,9 +128,9 @@ export async function handleWriteTool(
 
     case 'mc_setCampaignContent': {
       const schema = z.object({
-        campaignId: z.string().min(1),
-        plain_text: z.string().optional(),
-        html: z.string().optional(),
+        campaignId: mailchimpIdSchema,
+        plain_text: z.string().max(1000000).optional(), // ~1MB limit
+        html: z.string().max(1000000).optional(), // ~1MB limit
       });
       const params = schema.parse(args);
       if (!params.plain_text && !params.html) {
@@ -134,6 +141,7 @@ export async function handleWriteTool(
         content.plain_text = params.plain_text;
       }
       if (params.html) {
+        // Note: HTML content is not sanitized - ensure it's safe before sending
         content.html = params.html;
       }
       return await client.put(`/campaigns/${params.campaignId}/content`, content);
@@ -146,7 +154,7 @@ export async function handleWriteTool(
         );
       }
       const schema = z.object({
-        campaignId: z.string().min(1),
+        campaignId: mailchimpIdSchema,
       });
       const params = schema.parse(args);
       return await client.post(`/campaigns/${params.campaignId}/actions/send`, {});
