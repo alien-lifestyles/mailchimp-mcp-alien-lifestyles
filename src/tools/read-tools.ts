@@ -138,6 +138,20 @@ export function createReadTools(client: MailchimpClient): Tool[] {
       },
     },
     {
+      name: 'mc_getCampaignContent',
+      description: 'Get the HTML and plain text content for a specific campaign. Returns both html and plain_text fields.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          campaignId: {
+            type: 'string',
+            description: 'The unique ID for the campaign',
+          },
+        },
+        required: ['campaignId'],
+      },
+    },
+    {
       name: 'mc_getCampaignReport',
       description: 'Get analytics report for a sent campaign including opens, clicks, bounces, unsubscribes, and engagement statistics.',
       inputSchema: {
@@ -922,6 +936,14 @@ export async function handleReadTool(
       });
       const params = schema.parse(args);
       return await client.get(`/campaigns/${params.campaignId}`);
+    }
+
+    case 'mc_getCampaignContent': {
+      const schema = z.object({
+        campaignId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.get(`/campaigns/${params.campaignId}/content`);
     }
 
     case 'mc_getCampaignReport': {

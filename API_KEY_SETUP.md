@@ -15,7 +15,7 @@ Your Mailchimp API key should be in this format:
 ## Locations to Update
 
 ### 1. Project `.env` File
-**Location:** `/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP/.env`
+**Location:** `.env` (in the project root directory)
 
 **Format:**
 ```bash
@@ -40,8 +40,8 @@ TRANSPORT_MODE=stdio
   "mcpServers": {
     "mailchimp-mcp": {
       "command": "/usr/local/bin/node",
-      "args": ["/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP/dist/index.js"],
-      "cwd": "/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP",
+      "args": ["/path/to/mailchimp-mcp/dist/index.js"],
+      "cwd": "/path/to/mailchimp-mcp",
       "env": {
         "MAILCHIMP_API_KEY": "your_full_api_key_here-us9",
         "MAILCHIMP_SERVER_PREFIX": "us9",
@@ -64,7 +64,7 @@ TRANSPORT_MODE=stdio
    - Copy the ENTIRE key including `-us9`
 
 2. **Update the `.env` file:**
-   - Open `/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP/.env`
+   - Open `.env` in your project root directory
    - Replace the value after `MAILCHIMP_API_KEY=`
    - No quotes needed in `.env` file
 

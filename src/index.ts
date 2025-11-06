@@ -24,6 +24,8 @@ const TRANSPORT_MODE = process.env.TRANSPORT_MODE || 'stdio';
 const MASK_PII = process.env.MAILCHIMP_MASK_PII === 'true';
 // CORS configuration - allow specific origins or default to localhost only
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()).filter(Boolean) || [];
+// HTTP mode security limits
+const MAX_REQUEST_BODY_SIZE = 10 * 1024 * 1024; // 10MB limit for HTTP requests
 
 if (!API_KEY) {
   console.error('❌ MAILCHIMP_API_KEY environment variable is required');
@@ -109,6 +111,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResponse) {
   /**
+   * Validate if origin is a valid localhost origin
+   * Uses URL parsing to prevent subdomain attacks (e.g., evillocalhost.com)
+   */
+  const isValidLocalhost = (origin: string): boolean => {
+    try {
+      const url = new URL(origin);
+      // Allow localhost, 127.0.0.1, and IPv6 localhost
+      return url.hostname === 'localhost' || 
+             url.hostname === '127.0.0.1' ||
+             url.hostname === '[::1]' ||
+             url.hostname === '::1';
+    } catch {
+      return false;
+    }
+  };
+
+  /**
    * Set CORS headers with security restrictions
    * Default: Only allow localhost origins for security
    * Override: Set ALLOWED_ORIGINS environment variable with comma-separated origins
@@ -123,8 +142,8 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
       }
       // If origin not in allowed list, don't set CORS header (browser will block)
     } else {
-      // Default: Only allow localhost for development
-      if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      // Default: Only allow localhost for development (with strict validation)
+      if (origin && isValidLocalhost(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
       }
     }
@@ -311,10 +330,43 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
 
     if (req.method === 'POST') {
       let body = '';
+      let bodySize = 0;
+      
       req.on('data', (chunk) => {
+        bodySize += chunk.length;
+        // Enforce maximum request body size to prevent DoS attacks
+        if (bodySize > MAX_REQUEST_BODY_SIZE) {
+          req.destroy(); // Stop reading
+          sendSSEMessage(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              id: null,
+              error: {
+                code: -32600,
+                message: `Request body too large. Maximum size: ${MAX_REQUEST_BODY_SIZE / 1024 / 1024}MB`,
+              },
+            })
+          );
+          return;
+        }
         body += chunk.toString();
       });
+      
       req.on('end', async () => {
+        // Double-check size after all data is received
+        if (bodySize > MAX_REQUEST_BODY_SIZE) {
+          sendSSEMessage(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              id: null,
+              error: {
+                code: -32600,
+                message: `Request body too large. Maximum size: ${MAX_REQUEST_BODY_SIZE / 1024 / 1024}MB`,
+              },
+            })
+          );
+          return;
+        }
         try {
           if (body.trim()) {
             const lines = body.split('\n');

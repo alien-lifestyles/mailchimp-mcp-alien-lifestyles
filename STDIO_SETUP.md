@@ -16,7 +16,7 @@ In ChatGPT's MCP settings (Settings → Developer → Model Context Protocol), c
 - **Name**: `mailchimp-mcp`
 - **Command**: `node`
 - **Arguments**: `dist/index.js` (or `src/index.ts` for dev with tsx)
-- **Working Directory**: `/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP`
+- **Working Directory**: `/path/to/mailchimp-mcp` (replace with your actual project path)
 - **Environment Variables**: Load from `.env` file
 
 ### Environment Variables (.env):
@@ -32,16 +32,18 @@ TRANSPORT_MODE=stdio
 
 ### For Production:
 ```bash
-cd "/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP"
+cd /path/to/mailchimp-mcp
 npm run build
 TRANSPORT_MODE=stdio npm start
 ```
 
 ### For Development:
 ```bash
-cd "/Users/michaelreynolds/Desktop/Cursor/Mailchimp MCP"
+cd /path/to/mailchimp-mcp
 TRANSPORT_MODE=stdio npm run dev
 ```
+
+**Note:** Replace `/path/to/mailchimp-mcp` with your actual project directory path.
 
 ## What Happens
 
