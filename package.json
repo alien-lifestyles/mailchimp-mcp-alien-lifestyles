@@ -15,8 +15,12 @@
     "mailchimp",
     "model-context-protocol"
   ],
-  "author": "",
+  "author": "alien-lifestyles",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alien-lifestyles/mailchimp-mcp-alien-lifestyles.git"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "dotenv": "^16.4.5",
