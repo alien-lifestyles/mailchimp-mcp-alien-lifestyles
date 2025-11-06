@@ -2,6 +2,22 @@
 
 A Model Context Protocol (MCP) server for integrating Mailchimp with Claude Desktop and other MCP-compatible clients.
 
+## ⚠️ Security & Privacy Notice
+
+**IMPORTANT:** This MCP server exposes personal data to Claude AI and Claude Desktop:
+
+- **Email addresses and member information** are sent to Claude AI via tool responses
+- **Claude Desktop stores conversation history** locally on your device (including API responses)
+- **Use only with accounts containing non-sensitive data**
+- **Enable PII masking** (`MAILCHIMP_MASK_PII=true`) to protect personal information
+- **Review [SECURITY.md](./SECURITY.md)** for detailed security information and compliance considerations
+
+**Before using in production:**
+- Review data handling practices
+- Understand compliance requirements (GDPR, CCPA, HIPAA)
+- Consider enabling PII masking
+- Secure your API keys and configuration files
+
 ## Features
 
 - ✅ Full Mailchimp API integration
@@ -53,6 +69,7 @@ Create a `.env` file in the project root:
 MAILCHIMP_API_KEY=your_full_api_key_here-us9
 MAILCHIMP_SERVER_PREFIX=us9
 MAILCHIMP_READONLY=true
+MAILCHIMP_MASK_PII=true
 TRANSPORT_MODE=stdio
 ```
 
@@ -60,6 +77,7 @@ TRANSPORT_MODE=stdio
 - Replace `your_full_api_key_here-us9` with your actual API key
 - The `MAILCHIMP_SERVER_PREFIX` should match the datacenter suffix (e.g., `us9`, `us1`, `us2`)
 - Set `MAILCHIMP_READONLY=true` for read-only access (recommended)
+- **Set `MAILCHIMP_MASK_PII=true` to mask email addresses and personal information** (recommended for privacy)
 - Use `TRANSPORT_MODE=stdio` for Claude Desktop
 
 See [API_KEY_SETUP.md](./API_KEY_SETUP.md) for detailed instructions.
@@ -148,9 +166,15 @@ Once set up with Claude Desktop, you can ask:
 | `MAILCHIMP_API_KEY` | Your Mailchimp API key (with datacenter suffix) | Yes | - |
 | `MAILCHIMP_SERVER_PREFIX` | Datacenter prefix (e.g., `us9`, `us1`) | Yes | `us21` |
 | `MAILCHIMP_READONLY` | Enable read-only mode | No | `true` |
+| `MAILCHIMP_MASK_PII` | Mask email addresses and personal information | No | `false` |
 | `CONFIRM_SEND` | Required to send campaigns | No | - |
 | `TRANSPORT_MODE` | Transport mode (`stdio` or `http`) | No | `stdio` |
 | `PORT` | HTTP server port (if using HTTP mode) | No | `3000` |
+
+**Security Recommendations:**
+- Set `MAILCHIMP_MASK_PII=true` to protect personal information
+- Use read-only API keys with minimal permissions
+- Never commit API keys to version control
 
 ## Project Structure
 
@@ -206,7 +230,11 @@ See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more help.
 
 - **Never commit your `.env` file** - it contains sensitive API keys
 - Use read-only mode (`MAILCHIMP_READONLY=true`) when possible
+- **Enable PII masking** (`MAILCHIMP_MASK_PII=true`) to protect personal information
+- **Review [SECURITY.md](./SECURITY.md)** for comprehensive security documentation
 - Campaign sending requires explicit confirmation (`CONFIRM_SEND=I_KNOW_WHAT_IM_DOING`)
+- **Claude Desktop stores conversation history** - regularly review and delete sensitive conversations
+- **Only use with non-sensitive data** - consider compliance requirements for your use case
 
 ## License
 

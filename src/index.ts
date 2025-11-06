@@ -21,6 +21,7 @@ const READONLY = process.env.MAILCHIMP_READONLY !== 'false';
 const CONFIRM_SEND = process.env.CONFIRM_SEND || '';
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const TRANSPORT_MODE = process.env.TRANSPORT_MODE || 'stdio';
+const MASK_PII = process.env.MAILCHIMP_MASK_PII === 'true';
 
 if (!API_KEY) {
   console.error('❌ MAILCHIMP_API_KEY environment variable is required');
@@ -58,7 +59,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const isReadTool = readTools.some(tool => tool.name === name);
     
     if (isReadTool) {
-      const result = await handleReadTool(name, args, client);
+      const result = await handleReadTool(name, args, client, MASK_PII);
       return {
         content: [
           {
@@ -195,7 +196,7 @@ async function handleHttpRequest(req: http.IncomingMessage, res: http.ServerResp
             try {
               let result: unknown;
               if (isReadTool) {
-                result = await handleReadTool(name, args, client);
+                result = await handleReadTool(name, args, client, MASK_PII);
               } else {
                 result = await handleWriteTool(name, args, client, CONFIRM_SEND);
               }
