@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mailchimp MCP Setup | Alien Lifestyles</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-gradient"></div>
+  <div class="container">
+    <header>
+      <div class="logo-section">
+        <img src="alien-lifestyles-logo.png" alt="Alien Lifestyles" class="logo-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display: none;">
+          <div class="logo-text">AL</div>
+        </div>
+        <div class="brand-info">
+          <h1>Mailchimp MCP</h1>
+          <p class="subtitle">Powered by Alien Lifestyles</p>
+        </div>
+      </div>
+      <p class="header-description">Configure your integration securely. All data stays on your machine.</p>
+    </header>
+
+    <div class="status-message" id="statusMessage"></div>
+
+    <form id="setupForm">
+      <section class="form-section">
+        <div class="section-header">
+          <h2>Mailchimp API Configuration</h2>
+          <span class="required-badge">Required</span>
+        </div>
+        <div class="form-group">
+          <label for="mailchimpApiKey">
+            Mailchimp API Key
+            <span class="required-asterisk">*</span>
+          </label>
+          <input 
+            type="password" 
+            id="mailchimpApiKey" 
+            name="mailchimpApiKey" 
+            placeholder="your_api_key-us9"
+            required
+          >
+          <small>
+            <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 12c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm1-4H7V4h2v4z" fill="currentColor"/>
+            </svg>
+            Get your API key from <a href="https://mailchimp.com/developer/portal/" target="_blank">Mailchimp Developer Portal</a>
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="mailchimpServerPrefix">Server Prefix</label>
+          <input 
+            type="text" 
+            id="mailchimpServerPrefix" 
+            name="mailchimpServerPrefix" 
+            placeholder="us9"
+            pattern="us[0-9]+"
+          >
+          <small>Usually found in your API key (e.g., us9, us1, us2)</small>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <div class="section-header">
+          <h2>License Configuration</h2>
+          <span class="optional-badge">Optional</span>
+        </div>
+        <div class="form-group">
+          <label for="licenseKey">License Key</label>
+          <input 
+            type="text" 
+            id="licenseKey" 
+            name="licenseKey" 
+            placeholder="ALIEN-XXXX-XXXX-XXXX"
+          >
+          <div class="license-info">
+            <div class="license-tier">
+              <div class="tier-header">
+                <span class="tier-icon">🆓</span>
+                <strong>Free Version</strong>
+              </div>
+              <p>Read-only access with 5 Marketer prompts</p>
+            </div>
+            <div class="license-tier premium">
+              <div class="tier-header">
+                <span class="tier-icon">⭐</span>
+                <strong>Paid Version</strong>
+              </div>
+              <p>Full access: All 30+ prompts + write features</p>
+              <a href="https://alienlifestyles.com" target="_blank" class="upgrade-link">Get license key →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <div class="section-header">
+          <h2>Privacy Settings</h2>
+          <span class="optional-badge">Optional</span>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="maskPii" name="maskPii" checked>
+            <span>Mask PII (Personally Identifiable Information)</span>
+          </label>
+          <small>Recommended: Masks email addresses and personal data in responses</small>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <div class="section-header">
+          <h2>Image Generation API Keys</h2>
+          <span class="optional-badge">Optional</span>
+        </div>
+        <div class="form-group">
+          <label for="openaiApiKey">OpenAI API Key</label>
+          <input 
+            type="password" 
+            id="openaiApiKey" 
+            name="openaiApiKey" 
+            placeholder="sk-..."
+          >
+          <small>For DALL-E image generation</small>
+        </div>
+        <div class="form-group">
+          <label for="stabilityApiKey">Stability AI API Key</label>
+          <input 
+            type="password" 
+            id="stabilityApiKey" 
+            name="stabilityApiKey" 
+            placeholder="sk-..."
+          >
+          <small>For Stable Diffusion image generation</small>
+        </div>
+        <div class="form-group">
+          <label for="replicateApiKey">Replicate API Key</label>
+          <input 
+            type="password" 
+            id="replicateApiKey" 
+            name="replicateApiKey" 
+            placeholder="r8_..."
+          >
+          <small>For Replicate image generation models</small>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <span>Save Configuration</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Confirm Configuration</h2>
+          <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="licenseTypeDisplay"></div>
+          <div id="featuresList"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelSave">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmSave">Confirm & Save</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <div class="security-badge">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L3 5v5c0 5.55 3.84 10.74 7 12 3.16-1.26 7-6.45 7-12V5l-7-3z" fill="currentColor"/>
+          </svg>
+          <div>
+            <strong>100% Local Storage</strong>
+            <p>All data stored in your <code>.env</code> file. Nothing leaves your machine.</p>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="https://alienlifestyles.com" target="_blank">Alien Lifestyles</a>
+          <span>•</span>
+          <a href="https://github.com/alien-lifestyles/mailchimp-mcp-alien-lifestyles" target="_blank">Documentation</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

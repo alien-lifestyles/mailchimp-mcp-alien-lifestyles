@@ -119,6 +119,14 @@ function updateClaudeDesktopConfig(licenseKey: string | null): { success: boolea
       const normalizedKey = licenseKey.trim().toUpperCase();
       console.log('[updateClaudeDesktopConfig] Setting license key to:', normalizedKey);
       config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY = normalizedKey;
+      
+      // Verify it was set correctly
+      const verifySet = config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY;
+      if (verifySet !== normalizedKey) {
+        console.error('[updateClaudeDesktopConfig] ❌ FAILED TO SET! Expected:', normalizedKey, 'Got:', verifySet);
+        throw new Error(`Failed to set license key in config object. Expected: ${normalizedKey}, Got: ${verifySet}`);
+      }
+      console.log('[updateClaudeDesktopConfig] ✅ License key set in config object:', verifySet);
     } else {
       console.log('[updateClaudeDesktopConfig] Removing license key (empty value provided)');
       delete config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY;
@@ -131,9 +139,25 @@ function updateClaudeDesktopConfig(licenseKey: string | null): { success: boolea
     
     // Write config file with pretty formatting
     try {
-      writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
-      console.log('Successfully wrote Claude Desktop config to:', configPath);
-      console.log('License key in config:', config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY || '(not set)');
+      const configToWrite = JSON.stringify(config, null, 2) + '\n';
+      console.log('[updateClaudeDesktopConfig] About to write config file...');
+      console.log('[updateClaudeDesktopConfig] Config file size:', configToWrite.length, 'bytes');
+      console.log('[updateClaudeDesktopConfig] License key that will be written:', config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY || '(not set)');
+      
+      writeFileSync(configPath, configToWrite, 'utf-8');
+      
+      // Immediately verify the write
+      const verifyContent = readFileSync(configPath, 'utf-8');
+      const verifyConfig = JSON.parse(verifyContent);
+      const verifyKey = verifyConfig.mcpServers?.['mailchimp-mcp']?.env?.MAILCHIMP_LICENSE_KEY;
+      
+      console.log('[updateClaudeDesktopConfig] ✅ File written successfully');
+      console.log('[updateClaudeDesktopConfig] Verified license key in file:', verifyKey || '(not set)');
+      console.log('[updateClaudeDesktopConfig] License key in config object:', config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY || '(not set)');
+      
+      if (verifyKey !== config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY) {
+        console.error('[updateClaudeDesktopConfig] ❌ MISMATCH! Written:', verifyKey, 'Expected:', config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_LICENSE_KEY);
+      }
     } catch (writeError) {
       console.error('Error writing Claude Desktop config:', writeError);
       return {
@@ -217,7 +241,7 @@ app.get('/api/config', (req, res) => {
   res.json({
     mailchimpApiKey: env.MAILCHIMP_API_KEY ? maskValue(env.MAILCHIMP_API_KEY) : '',
     mailchimpServerPrefix: env.MAILCHIMP_SERVER_PREFIX || 'us9',
-    licenseKey: env.MAILCHIMP_LICENSE_KEY ? maskValue(env.MAILCHIMP_LICENSE_KEY) : '',
+    licenseKey: env.MAILCHIMP_LICENSE_KEY ? maskLicenseKey(env.MAILCHIMP_LICENSE_KEY) : '',
     maskPii: env.MAILCHIMP_MASK_PII !== 'false',
     openaiApiKey: env.OPENAI_API_KEY ? maskValue(env.OPENAI_API_KEY) : '',
     stabilityApiKey: env.STABILITY_API_KEY ? maskValue(env.STABILITY_API_KEY) : '',
@@ -228,6 +252,12 @@ app.get('/api/config', (req, res) => {
 // Save config
 app.post('/api/config', (req, res) => {
   try {
+    console.log('\n=== POST /api/config ===');
+    console.log('Request body keys:', Object.keys(req.body));
+    console.log('Full request body:', JSON.stringify(req.body, null, 2));
+    console.log('License key in request:', req.body.licenseKey ? `${req.body.licenseKey.substring(0, 10)}...` : '(empty/undefined)');
+    console.log('License key full value:', req.body.licenseKey || '(empty/undefined)');
+    
     const currentEnv = readEnvFile();
     const newEnv = { ...currentEnv, ...req.body };
     
@@ -235,14 +265,24 @@ app.post('/api/config', (req, res) => {
     if (req.body.mailchimpApiKey) newEnv.MAILCHIMP_API_KEY = req.body.mailchimpApiKey;
     if (req.body.mailchimpServerPrefix) newEnv.MAILCHIMP_SERVER_PREFIX = req.body.mailchimpServerPrefix;
     if (req.body.licenseKey !== undefined) {
-      if (req.body.licenseKey.trim()) {
+      console.log('Processing license key...');
+      console.log('  Raw value:', req.body.licenseKey);
+      console.log('  Trimmed:', req.body.licenseKey ? req.body.licenseKey.trim() : '(empty)');
+      
+      if (req.body.licenseKey && req.body.licenseKey.trim()) {
         // Normalize the license key to uppercase
         const normalizedKey = req.body.licenseKey.trim().toUpperCase();
+        console.log('  Normalized:', normalizedKey);
         newEnv.MAILCHIMP_LICENSE_KEY = normalizedKey;
       } else {
+        console.log('  Removing license key (empty value)');
         delete newEnv.MAILCHIMP_LICENSE_KEY;
       }
+    } else {
+      console.log('License key not in request body (undefined)');
     }
+    
+    console.log('newEnv.MAILCHIMP_LICENSE_KEY:', newEnv.MAILCHIMP_LICENSE_KEY || '(not set)');
     if (req.body.maskPii !== undefined) newEnv.MAILCHIMP_MASK_PII = req.body.maskPii ? 'true' : 'false';
     if (req.body.openaiApiKey) newEnv.OPENAI_API_KEY = req.body.openaiApiKey;
     if (req.body.stabilityApiKey) newEnv.STABILITY_API_KEY = req.body.stabilityApiKey;
@@ -251,42 +291,116 @@ app.post('/api/config', (req, res) => {
     writeEnvFile(newEnv);
     
     // Try to update Claude Desktop config automatically
-    // Use the normalized key from newEnv if it exists, otherwise use the formatted one from request
-    const licenseKeyToSave = newEnv.MAILCHIMP_LICENSE_KEY || (req.body.licenseKey ? req.body.licenseKey.trim().toUpperCase() : null);
-    console.log('\n=== Claude Desktop Config Update ===');
-    console.log('License key from newEnv:', newEnv.MAILCHIMP_LICENSE_KEY || '(not set)');
-    console.log('License key from req.body:', req.body.licenseKey || '(not set)');
-    console.log('License key to save:', licenseKeyToSave || '(empty - will remove)');
-    console.log('Calling updateClaudeDesktopConfig...');
+    let claudeConfigResult: { success: boolean; message: string; path?: string };
     
-    const claudeConfigResult = updateClaudeDesktopConfig(licenseKeyToSave);
+    try {
+      // Use the normalized key from newEnv if it exists, otherwise use the formatted one from request
+      const licenseKeyToSave = newEnv.MAILCHIMP_LICENSE_KEY || (req.body.licenseKey ? req.body.licenseKey.trim().toUpperCase() : null);
+      console.log('\n=== Claude Desktop Config Update ===');
+      console.log('License key from newEnv:', newEnv.MAILCHIMP_LICENSE_KEY || '(not set)');
+      console.log('License key from req.body:', req.body.licenseKey || '(not set)');
+      console.log('License key to save:', licenseKeyToSave || '(empty - will remove)');
+      console.log('Type of licenseKeyToSave:', typeof licenseKeyToSave);
+      console.log('Calling updateClaudeDesktopConfig with:', licenseKeyToSave);
+      
+      // Always call updateClaudeDesktopConfig, even if licenseKeyToSave is null/undefined
+      // This ensures we update the config file (removing the key if it's empty)
+      console.log('About to call updateClaudeDesktopConfig...');
+      claudeConfigResult = updateClaudeDesktopConfig(licenseKeyToSave);
+      console.log('Function returned:', JSON.stringify(claudeConfigResult, null, 2));
+      
+      if (!claudeConfigResult.success) {
+        console.error('❌ CRITICAL: updateClaudeDesktopConfig failed!');
+        console.error('Error details:', claudeConfigResult.message);
+        console.error('Config path:', claudeConfigResult.path);
+      }
+      
+      console.log('Update result:', claudeConfigResult.success ? '✅ SUCCESS' : '❌ FAILED');
+      console.log('Message:', claudeConfigResult.message);
+      console.log('Path:', claudeConfigResult.path);
+      
+      if (!claudeConfigResult.success) {
+        console.error('❌ ERROR DETAILS:', JSON.stringify(claudeConfigResult, null, 2));
+      } else {
+        // Verify the write actually happened
+        try {
+          const verifyResult = readClaudeDesktopConfig();
+          const verifyKey = verifyResult.config?.mcpServers?.['mailchimp-mcp']?.env?.MAILCHIMP_LICENSE_KEY;
+          console.log('✅ Verification - License key in file:', verifyKey || '(not set)');
+          if (verifyKey !== licenseKeyToSave) {
+            console.error('⚠️ WARNING: License key mismatch! Expected:', licenseKeyToSave, 'Got:', verifyKey);
+            // Try to fix it by writing again
+            console.log('🔄 Attempting to fix mismatch by writing again...');
+            const retryResult = updateClaudeDesktopConfig(licenseKeyToSave);
+            console.log('Retry result:', retryResult.success ? '✅ SUCCESS' : '❌ FAILED');
+          }
+        } catch (verifyError) {
+          console.error('⚠️ Could not verify write:', verifyError);
+        }
+      }
+      console.log('=== End Update ===\n');
+    } catch (updateError) {
+      console.error('❌ FATAL ERROR in Claude Desktop config update:', updateError);
+      claudeConfigResult = {
+        success: false,
+        message: `Fatal error: ${updateError instanceof Error ? updateError.message : 'Unknown error'}`,
+        path: getClaudeDesktopConfigPath(),
+      };
+    }
     
-    console.log('Update result:', claudeConfigResult.success ? '✅ SUCCESS' : '❌ FAILED');
-    console.log('Message:', claudeConfigResult.message);
-    console.log('Path:', claudeConfigResult.path);
+    // Build detailed success message
+    let message = '✅ Configuration saved successfully!\n\n';
     
-    if (!claudeConfigResult.success) {
-      console.error('❌ ERROR DETAILS:', JSON.stringify(claudeConfigResult, null, 2));
+    // .env file status
+    message += '📁 .env File:\n';
+    message += '  ✅ Saved successfully\n';
+    if (newEnv.MAILCHIMP_LICENSE_KEY) {
+      message += `  📝 License Key: ${maskValue(newEnv.MAILCHIMP_LICENSE_KEY)}\n`;
+      message += `  🎫 License Type: ${newEnv.MAILCHIMP_LICENSE_KEY.match(/^ALIEN-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) ? 'PAID ⭐' : 'FREE 🆓'}\n`;
     } else {
-      // Verify the write actually happened
+      message += '  🆓 License Type: FREE (No license key)\n';
+    }
+    
+    message += '\n';
+    
+    // Claude Desktop config status
+    message += '🖥️  Claude Desktop Config:\n';
+    if (claudeConfigResult.success) {
+      message += '  ✅ Updated successfully\n';
+      message += `  📍 Location: ${claudeConfigResult.path}\n`;
+      
+      // Verify the write
       try {
         const verifyResult = readClaudeDesktopConfig();
         const verifyKey = verifyResult.config?.mcpServers?.['mailchimp-mcp']?.env?.MAILCHIMP_LICENSE_KEY;
-        console.log('✅ Verification - License key in file:', verifyKey || '(not set)');
-        if (verifyKey !== licenseKeyToSave) {
-          console.error('⚠️ WARNING: License key mismatch! Expected:', licenseKeyToSave, 'Got:', verifyKey);
+        if (verifyKey) {
+          message += `  📝 License Key: ${maskValue(verifyKey)}\n`;
+          message += `  🎫 License Type: ${verifyKey.match(/^ALIEN-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) ? 'PAID ⭐' : 'FREE 🆓'}\n`;
+          
+          // Check if keys match
+          if (verifyKey === licenseKeyToSave) {
+            message += '  ✅ Keys are in sync\n';
+          } else {
+            message += `  ⚠️  Keys don't match (expected: ${maskValue(licenseKeyToSave || '')}, got: ${maskValue(verifyKey)})\n`;
+          }
+        } else {
+          message += '  🆓 License Type: FREE (No license key)\n';
+          if (licenseKeyToSave) {
+            message += '  ⚠️  Warning: License key was not found in config file\n';
+          }
         }
       } catch (verifyError) {
-        console.error('⚠️ Could not verify write:', verifyError);
+        message += '  ⚠️  Could not verify update\n';
       }
-    }
-    console.log('=== End Update ===\n');
-    
-    let message = 'Configuration saved to .env file successfully!';
-    if (claudeConfigResult.success) {
-      message += `\n\n✅ Claude Desktop config updated automatically at:\n${claudeConfigResult.path}\n\nPlease restart Claude Desktop for changes to take effect.`;
+      
+      message += '\n';
+      message += '🔄 Next Step: Restart Claude Desktop completely for changes to take effect.';
     } else {
-      message += `\n\n⚠️ Could not update Claude Desktop config automatically:\n${claudeConfigResult.message}\n\nPlease manually add MAILCHIMP_LICENSE_KEY to your Claude Desktop config file.`;
+      message += '  ❌ Update failed\n';
+      message += `  ⚠️  Error: ${claudeConfigResult.message}\n`;
+      message += `  📍 Location: ${claudeConfigResult.path || 'Unknown'}\n`;
+      message += '\n';
+      message += '⚠️  Please manually add MAILCHIMP_LICENSE_KEY to your Claude Desktop config file.';
     }
     
     res.json({
@@ -295,6 +409,10 @@ app.post('/api/config', (req, res) => {
       claudeConfigUpdated: claudeConfigResult.success,
       claudeConfigPath: claudeConfigResult.path,
       claudeConfigError: claudeConfigResult.success ? undefined : claudeConfigResult.message,
+      licenseKey: newEnv.MAILCHIMP_LICENSE_KEY ? maskValue(newEnv.MAILCHIMP_LICENSE_KEY) : null,
+      licenseType: newEnv.MAILCHIMP_LICENSE_KEY 
+        ? (newEnv.MAILCHIMP_LICENSE_KEY.match(/^ALIEN-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) ? 'PAID' : 'FREE')
+        : 'FREE',
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
@@ -342,6 +460,23 @@ app.post('/api/claude-config/update', (req, res) => {
 function maskValue(value: string): string {
   if (!value || value.length < 8) return '••••••••';
   return value.substring(0, 4) + '••••••••' + value.substring(value.length - 4);
+}
+
+// Helper to mask license key in format ALIEN-xxxx-****-xxxx (hides middle 2 segments)
+function maskLicenseKey(value: string): string {
+  if (!value) return '';
+  
+  // Check if it matches the ALIEN-XXXX-XXXX-XXXX format
+  const pattern = /^ALIEN-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})$/;
+  const match = value.toUpperCase().match(pattern);
+  
+  if (match) {
+    // Return ALIEN-xxxx-****-xxxx (first and last segments visible, middle hidden)
+    return `ALIEN-${match[1]}-****-${match[3]}`;
+  }
+  
+  // If it doesn't match the format, fall back to regular masking
+  return maskValue(value);
 }
 
 app.listen(PORT, async () => {
