@@ -152,25 +152,6 @@ Mailchimp API → MCP Server → Claude Desktop → Claude AI → Potentially St
 
 ---
 
-### 7. HTTP Mode Rate Limiting 🟡
-
-**Current Situation:**
-- HTTP mode (`TRANSPORT_MODE=http`) has no built-in rate limiting
-- Potential for DoS attacks via rapid requests
-- No protection against abuse
-
-**Mitigation:**
-- **HTTP mode is intended for development/testing only**
-- Use stdio mode (`TRANSPORT_MODE=stdio`) for production with Claude Desktop
-- If using HTTP mode in production, implement rate limiting middleware:
-  - Use `express-rate-limit` or similar
-  - Set appropriate limits (e.g., 100 requests/minute per IP)
-  - Monitor for abuse
-- Consider using a reverse proxy (nginx, Cloudflare) with rate limiting
-- Monitor request logs for suspicious activity
-
-**Recommendation:** Prefer stdio mode for production use to avoid HTTP security concerns.
-
 ---
 
 ## Compliance Considerations
@@ -390,7 +371,6 @@ If you discover a security vulnerability:
 - [x] Input validation enhancements
 - [x] Request body size limits
 - [x] CORS origin validation improvements
-- [ ] Rate limiting for HTTP mode
 
 ### Long-term Goals
 

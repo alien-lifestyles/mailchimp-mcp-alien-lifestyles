@@ -17,35 +17,7 @@
 
 ---
 
-### 🔒 CORS Security Tests (HTTP Mode Only)
-
-If testing HTTP mode (`TRANSPORT_MODE=http`):
-
-1. **Test Localhost Access:**
-   - From `http://localhost:3000` - Should work ✅
-   - From `http://127.0.0.1:3000` - Should work ✅
-
-2. **Test Invalid Origins (Should Fail):**
-   - From `http://evillocalhost.com` - Should be blocked ❌
-   - From `http://localhost.evil.com` - Should be blocked ❌
-   - From `http://example.com` - Should be blocked ❌
-
-**Note:** If HTTP mode isn't used, skip these tests (stdio mode doesn't use CORS)
-
----
-
-### 🔒 Request Body Size Limit Tests (HTTP Mode Only)
-
-If testing HTTP mode:
-
-1. **Normal Request:**
-   - Small request body (< 10MB) - Should work ✅
-
-2. **Oversized Request:**
-   - Request body > 10MB - Should reject with error ❌
-   - Error message should mention "Request body too large"
-
-**Note:** This is hard to test manually, but the protection is in place
+**Note:** This server only supports stdio mode. HTTP mode has been removed for security and simplicity.
 
 ---
 
@@ -80,18 +52,15 @@ Test that validation still works:
 
 ## What Changed
 
-1. **CORS Origin Validation** - Now uses URL parsing instead of substring matching
-   - Only affects HTTP mode
-   - More secure against subdomain attacks
-   - Should work identically for legitimate localhost usage
+1. **HTTP Mode Removed** - Server now only supports stdio mode
+   - Simplified codebase and security model
+   - Removed HTTP/SSE endpoints and CORS handling
+   - All communication via stdio (standard MCP approach)
 
-2. **Request Body Size Limits** - 10MB limit added
-   - Only affects HTTP mode
-   - Prevents DoS via large payloads
-   - Normal requests unaffected
-
-3. **Documentation** - Rate limiting guidance added
-   - Documentation only, no code changes
+2. **Input Validation** - Enhanced validation remains in place
+   - Email format and length validation
+   - Pagination limits (offset, count)
+   - All existing validations still active
 
 ---
 

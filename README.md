@@ -23,6 +23,10 @@ A Model Context Protocol (MCP) server for integrating Mailchimp with Claude Desk
 - ✅ Full Mailchimp API integration
 - ✅ Read-only tools for safe data access
 - ✅ Optional write tools (campaign creation/sending)
+- ✅ **Template creation with MTL validation** (NEW)
+- ✅ **File Manager integration** (NEW)
+- ✅ **AI Image Generation** (NEW) - Generate images with DALL-E, Stability AI, or Replicate
+- ✅ **Pre-populated Prompts** (NEW) - 30+ clickable prompts organized by persona (CSM, Marketer, Business Owner)
 - ✅ Rate limiting and retry logic
 - ✅ Input validation with Zod
 - ✅ Supports both stdio and HTTP/SSE transports
@@ -142,22 +146,46 @@ npm start
 - `mc_getCampaign` - Get detailed information about a specific campaign
 - `mc_getCampaignReport` - Get analytics report for a sent campaign
 - `mc_getAccount` - Get account information
+- `mc_listVerifiedDomains` - List all verified domains and their authentication status
+- `mc_getVerifiedDomain` - Get detailed authentication status for a specific domain
 
 ### Write Tools (Only if `MAILCHIMP_READONLY=false`)
 
 - `mc_createCampaign` - Create a new Mailchimp campaign
 - `mc_setCampaignContent` - Set content for a campaign
 - `mc_sendCampaign` - Send a campaign (requires `CONFIRM_SEND=I_KNOW_WHAT_IM_DOING`)
+- `mc_createTemplate` - Create a custom-coded template with MTL validation
+- `mc_updateTemplate` - Update an existing template
+- `mc_deleteTemplate` - Delete a template
+- `mc_uploadFile` - Upload files (images, PDFs) to File Manager
+- `mc_createTemplateFolder` - Create a folder for organizing templates
+- `mc_createFileFolder` - Create a folder in File Manager
+- `mc_generateAndUploadImage` - Generate AI images and upload to Mailchimp (NEW)
+
+**New:** Template creation features with automatic Mailchimp Template Language (MTL) compliance validation. See [TEMPLATE_CREATION_FEATURES.md](./TEMPLATE_CREATION_FEATURES.md) for details.
+
+**New:** AI image generation integration - Generate images using OpenAI DALL-E, Stability AI, or Replicate, and automatically upload them to Mailchimp. See [IMAGE_GENERATION_GUIDE.md](./IMAGE_GENERATION_GUIDE.md) for setup and usage.
 
 ## Example Queries
 
-Once set up with Claude Desktop, you can ask:
+Once set up with Claude Desktop, you can:
 
+### Use Pre-populated Prompts (Recommended)
+Click on any of the 30+ pre-populated prompts in Claude Desktop, organized by persona:
+- **CSM prompts:** Account health checks, upsell opportunities, troubleshooting
+- **Marketer prompts:** Performance reports, strategic insights, executive summaries
+- **Business Owner prompts:** Quick status updates, ROI assessment, strategic planning
+
+See [USE_CASES_GUIDE.md](./USE_CASES_GUIDE.md) for the complete list.
+
+### Or Ask Directly
 - "List my Mailchimp audiences"
 - "How many subscribers do I have?"
 - "Show me my recent campaigns"
 - "What's my top performing campaign?"
 - "Get details for campaign [campaign_id]"
+- "Check my domain authentication status"
+- "List all my verified domains"
 
 ## Environment Variables
 
@@ -168,9 +196,10 @@ Once set up with Claude Desktop, you can ask:
 | `MAILCHIMP_READONLY` | Enable read-only mode | No | `true` |
 | `MAILCHIMP_MASK_PII` | Mask email addresses and personal information | No | `false` |
 | `CONFIRM_SEND` | Required to send campaigns | No | - |
-| `TRANSPORT_MODE` | Transport mode (`stdio` or `http`) | No | `stdio` |
-| `PORT` | HTTP server port (if using HTTP mode) | No | `3000` |
-| `ALLOWED_ORIGINS` | Comma-separated CORS origins (HTTP mode only, empty = localhost only) | No | - |
+| `TRANSPORT_MODE` | Transport mode (must be `stdio`) | No | `stdio` |
+| `OPENAI_API_KEY` | OpenAI API key for image generation (optional) | No | - |
+| `STABILITY_API_KEY` | Stability AI API key for image generation (optional) | No | - |
+| `REPLICATE_API_KEY` | Replicate API token for image generation (optional) | No | - |
 
 **Security Recommendations:**
 - Set `MAILCHIMP_MASK_PII=true` to protect personal information
@@ -203,6 +232,7 @@ mailchimp-mcp/
 - Verify your API key is correct and active in Mailchimp
 - Ensure the datacenter prefix matches (`us9` in key and `MAILCHIMP_SERVER_PREFIX`)
 - Check that you're using the **full, unmasked** API key
+- The API key should include the datacenter suffix (e.g., `-us9`)
 
 ### Claude Desktop Connection Issues
 
@@ -210,8 +240,7 @@ mailchimp-mcp/
 - Ensure `dist/index.js` exists (run `npm run build`)
 - Check Claude Desktop logs: Settings → Developer → View Logs
 - Restart Claude Desktop after configuration changes
-
-See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more help.
+- Verify `TRANSPORT_MODE=stdio` is set in your configuration
 
 ## Development
 
@@ -251,8 +280,8 @@ Contributions welcome! Please ensure:
 ## Support
 
 For issues or questions:
-1. Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
-2. Check [API_KEY_SETUP.md](./API_KEY_SETUP.md) for API key issues
+1. Check the Troubleshooting section above
+2. Review [SECURITY.md](./SECURITY.md) for security and compliance information
 3. Open an issue on GitHub
 
 ## Acknowledgments

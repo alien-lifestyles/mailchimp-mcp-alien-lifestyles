@@ -841,6 +841,95 @@ export function createReadTools(client: MailchimpClient): Tool[] {
         required: ['storeId', 'customerId'],
       },
     },
+    {
+      name: 'mc_listFiles',
+      description: 'List files in Mailchimp\'s File Manager. Files include images, PDFs, and other assets used in campaigns.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          type: {
+            type: 'string',
+            enum: ['image', 'file'],
+            description: 'Filter by file type',
+          },
+          count: {
+            type: 'number',
+            description: 'Number of records to return (default: 10, max: 1000)',
+          },
+          offset: {
+            type: 'number',
+            description: 'Number of records from a collection to skip (default: 0)',
+          },
+        },
+      },
+    },
+    {
+      name: 'mc_getFile',
+      description: 'Get detailed information about a specific file including URL, size, and creation date.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fileId: {
+            type: 'string',
+            description: 'The unique ID for the file',
+          },
+        },
+        required: ['fileId'],
+      },
+    },
+    {
+      name: 'mc_listFileFolders',
+      description: 'List folders in Mailchimp\'s File Manager. Folders help organize files.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          count: {
+            type: 'number',
+            description: 'Number of records to return (default: 10, max: 1000)',
+          },
+          offset: {
+            type: 'number',
+            description: 'Number of records from a collection to skip (default: 0)',
+          },
+        },
+      },
+    },
+    {
+      name: 'mc_getFileFolder',
+      description: 'Get detailed information about a specific file folder.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          folderId: {
+            type: 'string',
+            description: 'The unique ID for the file folder',
+          },
+        },
+        required: ['folderId'],
+      },
+    },
+    {
+      name: 'mc_listVerifiedDomains',
+      description: 'List all verified domains and their authentication status. Shows which domains are verified and authenticated for sending emails, including DKIM, SPF, and DMARC status.',
+      inputSchema: {
+        type: 'object',
+        properties: {},
+      },
+    },
+    {
+      name: 'mc_getVerifiedDomain',
+      description: 'Get detailed authentication status for a specific domain including verification status, DKIM status, SPF status, DMARC status, and DNS record requirements.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domainName: {
+            type: 'string',
+            description: 'The domain name (e.g., example.com)',
+          },
+        },
+        required: ['domainName'],
+      },
+    },
   ];
 }
 
@@ -1446,6 +1535,73 @@ export async function handleReadTool(
       });
       const params = schema.parse(args);
       return await client.get(`/ecommerce/stores/${params.storeId}/customers/${params.customerId}`);
+    }
+
+    case 'mc_listFiles': {
+      const schema = z.object({
+        type: z.enum(['image', 'file']).optional(),
+        count: z.number().int().min(1).max(1000).optional(),
+        offset: z.number().int().min(0).max(100000).optional(),
+      });
+      const params = schema.parse(args);
+      const count = params.count ?? 50;
+      const queryParams = new URLSearchParams();
+      if (params.type) {
+        queryParams.append('type', params.type);
+      }
+      queryParams.append('count', count.toString());
+      if (params.offset !== undefined) {
+        queryParams.append('offset', params.offset.toString());
+      }
+      const query = queryParams.toString();
+      return await client.get(`/file-manager/files${query ? `?${query}` : ''}`);
+    }
+
+    case 'mc_getFile': {
+      const schema = z.object({
+        fileId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.get(`/file-manager/files/${params.fileId}`);
+    }
+
+    case 'mc_listFileFolders': {
+      const schema = z.object({
+        count: z.number().int().min(1).max(1000).optional(),
+        offset: z.number().int().min(0).max(100000).optional(),
+      });
+      const params = schema.parse(args);
+      const count = params.count ?? 50;
+      const queryParams = new URLSearchParams();
+      queryParams.append('count', count.toString());
+      if (params.offset !== undefined) {
+        queryParams.append('offset', params.offset.toString());
+      }
+      const query = queryParams.toString();
+      return await client.get(`/file-manager/folders${query ? `?${query}` : ''}`);
+    }
+
+    case 'mc_getFileFolder': {
+      const schema = z.object({
+        folderId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.get(`/file-manager/folders/${params.folderId}`);
+    }
+
+    case 'mc_listVerifiedDomains': {
+      return await client.get('/verified-domains');
+    }
+
+    case 'mc_getVerifiedDomain': {
+      const schema = z.object({
+        domainName: z.string().min(1).max(255).regex(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i, {
+          message: 'Invalid domain name format',
+        }),
+      });
+      const params = schema.parse(args);
+      // URL encode the domain name to handle special characters
+      return await client.get(`/verified-domains/${encodeURIComponent(params.domainName)}`);
     }
 
     default:

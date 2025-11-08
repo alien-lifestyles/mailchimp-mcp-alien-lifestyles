@@ -28,34 +28,21 @@ This document outlines critical security vulnerabilities that were identified an
 
 ---
 
-### 2. CORS Configuration Vulnerability
+### 2. HTTP Mode Removed
 
 **File:** `src/index.ts`
 
-**Problem:** CORS header was set to `'*'` (wildcard), allowing any website to make requests to the API.
+**Problem:** HTTP/SSE mode introduced unnecessary complexity and security concerns (CORS, rate limiting, etc.).
 
 **Fix:** 
-- Default: Only allow localhost origins for development
-- Configurable: Added `ALLOWED_ORIGINS` environment variable for explicit origin whitelist
-- Removed wildcard access
+- Removed HTTP/SSE mode entirely
+- Server now only supports stdio mode (standard MCP approach)
+- Simplified codebase and security model
+- Removed CORS, security headers, and HTTP-related code
 
-**Impact:** Prevents unauthorized cross-origin access to the API.
+**Impact:** Eliminates HTTP-related attack vectors and simplifies the codebase.
 
----
-
-### 3. Missing Security Headers
-
-**File:** `src/index.ts`
-
-**Problem:** HTTP responses lacked security headers, making the application vulnerable to common web attacks.
-
-**Fix:** Added comprehensive security headers:
-- `X-Content-Type-Options: nosniff` - Prevents MIME type sniffing
-- `X-Frame-Options: DENY` - Prevents clickjacking
-- `X-XSS-Protection: 1; mode=block` - XSS protection
-- `Strict-Transport-Security` - HSTS (only when using HTTPS)
-
-**Impact:** Protects against common web vulnerabilities (XSS, clickjacking, MIME sniffing).
+**Note:** CORS and security headers were only relevant for HTTP mode, which has been removed.
 
 ---
 
@@ -89,12 +76,11 @@ This document outlines critical security vulnerabilities that were identified an
 ### Updated Files:
 
 1. **`.env.example`**
-   - Added documentation for `ALLOWED_ORIGINS` environment variable
-   - Added comments explaining HTTP mode configuration
+   - Removed HTTP mode configuration (stdio-only now)
 
 2. **`README.md`**
-   - Added `ALLOWED_ORIGINS` to environment variables table
-   - Documented CORS security configuration
+   - Removed HTTP mode environment variables
+   - Updated to reflect stdio-only operation
 
 ---
 
@@ -113,8 +99,7 @@ This document outlines critical security vulnerabilities that were identified an
 | Category | Before | After |
 |----------|--------|-------|
 | Error Disclosure | Full API responses exposed | Only safe fields exposed |
-| CORS | Wildcard (`*`) allowed | Localhost only (configurable) |
-| Security Headers | None | 4 headers added |
+| Transport Mode | HTTP + stdio | stdio only (simplified) |
 | Email Validation | Basic validation | RFC 5321 compliant (254 char limit) |
 | Input Limits | Partial | Complete (count, offset, email) |
 | Dependencies | Not audited | Audited, clean |
@@ -123,11 +108,9 @@ This document outlines critical security vulnerabilities that were identified an
 
 ## 🚀 Next Steps (Optional Future Enhancements)
 
-1. **Rate Limiting** - Add rate limiting middleware for HTTP mode
-2. **Audit Logging** - Log security-relevant events
-3. **Request Size Limits** - Add body size limits for HTTP requests
-4. **Origin Validation** - More sophisticated CORS origin validation
-5. **Security Headers** - Consider Content Security Policy (CSP)
+1. **Audit Logging** - Log security-relevant events
+2. **Enhanced Input Validation** - Additional validation rules as needed
+3. **Security Monitoring** - Track and alert on suspicious activity
 
 ---
 
