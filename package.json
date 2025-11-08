@@ -1,6 +1,6 @@
 {
   "name": "@alien-lifestyles/mailchimp-mcp",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "Mailchimp MCP Server for Claude Desktop integration - Free (read-only) and Paid (full access) versions",
   "type": "module",
   "main": "dist/index.js",
