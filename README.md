@@ -21,15 +21,16 @@ A Model Context Protocol (MCP) server for integrating Mailchimp with Claude Desk
 ## Features
 
 - ✅ Full Mailchimp API integration
+- ✅ **Free & Paid Versions** - Free (read-only, 5 prompts) or Paid (full access, all features)
+- ✅ **Setup UI** - Secure web interface for entering API keys and license keys (`npm run setup`)
 - ✅ Read-only tools for safe data access
-- ✅ Optional write tools (campaign creation/sending)
-- ✅ **Template creation with MTL validation** (NEW)
-- ✅ **File Manager integration** (NEW)
-- ✅ **AI Image Generation** (NEW) - Generate images with DALL-E, Stability AI, or Replicate
-- ✅ **Pre-populated Prompts** (NEW) - 30+ clickable prompts organized by persona (CSM, Marketer, Business Owner)
+- ✅ Write tools (campaign creation, templates, file management) - Paid version only
+- ✅ **Template creation with MTL validation**
+- ✅ **File Manager integration**
+- ✅ **AI Image Generation** - Generate images with DALL-E, Stability AI, or Replicate
+- ✅ **Pre-populated Prompts** - 30+ clickable prompts (5 for free users, all for paid users)
 - ✅ Rate limiting and retry logic
 - ✅ Input validation with Zod
-- ✅ Supports both stdio and HTTP/SSE transports
 - ✅ Claude Desktop compatible
 
 ## Prerequisites
@@ -39,6 +40,14 @@ A Model Context Protocol (MCP) server for integrating Mailchimp with Claude Desk
 - Claude Desktop (for Claude integration)
 
 ## Installation
+
+### Option 1: Install from npm (Recommended)
+
+```bash
+npm install -g @alien-lifestyles/mailchimp-mcp
+```
+
+### Option 2: Install from Source
 
 1. Clone this repository:
 ```bash
@@ -56,35 +65,98 @@ npm install
 npm run build
 ```
 
+## Free vs Paid Versions
+
+### Free Version (Default)
+- **Read-only access** - View audiences, campaigns, reports, and analytics
+- **5 Marketer prompts** - Access to essential reporting prompts
+- **No write operations** - Cannot create campaigns, templates, or modify data
+- **No license key required** - Works out of the box
+
+### Paid Version
+- **Full read/write access** - Create campaigns, templates, audiences, segments, and more
+- **All 30+ prompts** - Access to CSM, Marketer, Business Owner, and Cross-functional prompts
+- **AI Image Generation** - Generate and upload images to Mailchimp
+- **Template Management** - Create, update, and delete custom templates
+- **File Manager** - Upload and organize files
+- **Requires license key** - Get your license from [alienlifestyles.com](https://alienlifestyles.com)
+
+### How to Upgrade to Paid
+
+1. Purchase a license from [alienlifestyles.com](https://alienlifestyles.com)
+2. You'll receive a license key in format: `ALIEN-XXXX-XXXX-XXXX`
+3. Add it to your `.env` file:
+   ```bash
+   MAILCHIMP_LICENSE_KEY=ALIEN-XXXX-XXXX-XXXX
+   ```
+4. Or use the setup UI: `npm run setup`
+5. Restart Claude Desktop to activate paid features
+
+### Updating the Package
+
+All users (free and paid) can update via npm:
+
+```bash
+npm update -g @alien-lifestyles/mailchimp-mcp
+```
+
+Your license key persists in your `.env` file, so paid features remain active after updates.
+
 ## Configuration
 
-### 1. Get Your Mailchimp API Key
+### Quick Setup (Recommended)
+
+Use the secure setup UI to configure your keys:
+
+```bash
+npm run setup
+```
+
+This opens a local web interface where you can:
+- Enter your Mailchimp API key securely
+- Add your license key (for paid version)
+- Configure optional image generation API keys
+- All data stays on your machine - nothing is sent over the network
+
+### Manual Configuration
+
+Alternatively, create a `.env` file manually:
+
+#### 1. Get Your Mailchimp API Key
 
 1. Go to [Mailchimp Developer Portal](https://mailchimp.com/developer/portal/)
 2. Or navigate to: Account → Extras → API keys
 3. Create a new API key or use an existing one
 4. Copy the **full API key** including the datacenter suffix (e.g., `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-us9`)
 
-### 2. Set Up Environment Variables
+#### 2. Set Up Environment Variables
 
 Create a `.env` file in the project root:
 
 ```bash
+# Required
 MAILCHIMP_API_KEY=your_full_api_key_here-us9
 MAILCHIMP_SERVER_PREFIX=us9
-MAILCHIMP_READONLY=true
+
+# Optional: License key for paid version
+# MAILCHIMP_LICENSE_KEY=ALIEN-XXXX-XXXX-XXXX
+
+# Privacy settings
 MAILCHIMP_MASK_PII=true
 TRANSPORT_MODE=stdio
+
+# Optional: Image generation API keys
+# OPENAI_API_KEY=your_openai_api_key_here
+# STABILITY_API_KEY=your_stability_api_key_here
+# REPLICATE_API_KEY=your_replicate_api_key_here
 ```
 
 **Important:**
 - Replace `your_full_api_key_here-us9` with your actual API key
 - The `MAILCHIMP_SERVER_PREFIX` should match the datacenter suffix (e.g., `us9`, `us1`, `us2`)
-- Set `MAILCHIMP_READONLY=true` for read-only access (recommended)
 - **Set `MAILCHIMP_MASK_PII=true` to mask email addresses and personal information** (recommended for privacy)
+- Add `MAILCHIMP_LICENSE_KEY` for paid version features
 - Use `TRANSPORT_MODE=stdio` for Claude Desktop
-
-See [API_KEY_SETUP.md](./API_KEY_SETUP.md) for detailed instructions.
 
 ## Usage
 
@@ -149,7 +221,7 @@ npm start
 - `mc_listVerifiedDomains` - List all verified domains and their authentication status
 - `mc_getVerifiedDomain` - Get detailed authentication status for a specific domain
 
-### Write Tools (Only if `MAILCHIMP_READONLY=false`)
+### Write Tools (Paid Version Only)
 
 - `mc_createCampaign` - Create a new Mailchimp campaign
 - `mc_setCampaignContent` - Set content for a campaign
@@ -160,7 +232,12 @@ npm start
 - `mc_uploadFile` - Upload files (images, PDFs) to File Manager
 - `mc_createTemplateFolder` - Create a folder for organizing templates
 - `mc_createFileFolder` - Create a folder in File Manager
-- `mc_generateAndUploadImage` - Generate AI images and upload to Mailchimp (NEW)
+- `mc_generateAndUploadImage` - Generate AI images and upload to Mailchimp
+- `mc_createAudience` - Create a new Mailchimp audience (list)
+- `mc_updateAudience` - Update audience settings, name, contact info, campaign defaults
+- `mc_createSegment` - Create static or saved segments
+- `mc_addTagToMember` - Add or remove tags from members
+- `mc_createMergeField` - Create custom merge fields for audiences
 
 **New:** Template creation features with automatic Mailchimp Template Language (MTL) compliance validation. See [TEMPLATE_CREATION_FEATURES.md](./TEMPLATE_CREATION_FEATURES.md) for details.
 
@@ -171,10 +248,19 @@ npm start
 Once set up with Claude Desktop, you can:
 
 ### Use Pre-populated Prompts (Recommended)
-Click on any of the 30+ pre-populated prompts in Claude Desktop, organized by persona:
+
+**Free Users:** Access to 5 Marketer prompts:
+- `marketer-quarterly-report-demo` - Comprehensive quarterly performance report
+- `marketer-performance-benchmarking` - Analyze campaign performance and benchmarks
+- `marketer-roi-analysis` - Show business impact of email marketing
+- `marketer-optimization-opportunities` - Identify optimization opportunities
+- `marketer-executive-summary` - Create monthly executive summary
+
+**Paid Users:** Access to all 30+ prompts, organized by persona:
 - **CSM prompts:** Account health checks, upsell opportunities, troubleshooting
 - **Marketer prompts:** Performance reports, strategic insights, executive summaries
 - **Business Owner prompts:** Quick status updates, ROI assessment, strategic planning
+- **Cross-functional prompts:** Account audits, team onboarding, industry benchmarking
 
 See [USE_CASES_GUIDE.md](./USE_CASES_GUIDE.md) for the complete list.
 
@@ -193,7 +279,8 @@ See [USE_CASES_GUIDE.md](./USE_CASES_GUIDE.md) for the complete list.
 |----------|-------------|----------|---------|
 | `MAILCHIMP_API_KEY` | Your Mailchimp API key (with datacenter suffix) | Yes | - |
 | `MAILCHIMP_SERVER_PREFIX` | Datacenter prefix (e.g., `us9`, `us1`) | Yes | `us21` |
-| `MAILCHIMP_READONLY` | Enable read-only mode | No | `true` |
+| `MAILCHIMP_LICENSE_KEY` | License key for paid version (format: ALIEN-XXXX-XXXX-XXXX) | No | - |
+| `MAILCHIMP_READONLY` | Enable read-only mode (deprecated - use license key instead) | No | `true` |
 | `MAILCHIMP_MASK_PII` | Mask email addresses and personal information | No | `false` |
 | `CONFIRM_SEND` | Required to send campaigns | No | - |
 | `TRANSPORT_MODE` | Transport mode (must be `stdio`) | No | `stdio` |
@@ -249,6 +336,7 @@ mailchimp-mcp/
 - `npm run dev` - Start development server with watch mode
 - `npm run build` - Build the project
 - `npm start` - Run the built server
+- `npm run setup` - Launch secure setup UI for configuring API keys and license
 
 ### Code Style
 
