@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { z } from 'zod';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { MailchimpClient } from '../lib/mailchimp-client.js';
@@ -251,6 +252,281 @@ export function createWriteTools(
           },
         },
         required: ['prompt', 'provider'],
+      },
+    },
+    {
+      name: 'mc_createAudience',
+      description: 'Create a new Mailchimp audience (list). Requires name, contact information, permission reminder, and campaign defaults.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            description: 'The name of the audience',
+          },
+          contact: {
+            type: 'object',
+            description: 'Contact information for the audience',
+            properties: {
+              company: {
+                type: 'string',
+                description: 'Company name',
+              },
+              address1: {
+                type: 'string',
+                description: 'Street address',
+              },
+              city: {
+                type: 'string',
+                description: 'City',
+              },
+              state: {
+                type: 'string',
+                description: 'State or province',
+              },
+              zip: {
+                type: 'string',
+                description: 'ZIP or postal code',
+              },
+              country: {
+                type: 'string',
+                description: 'Two-letter ISO 3166-1 country code (e.g., US, CA, GB)',
+              },
+            },
+            required: ['company', 'address1', 'city', 'state', 'zip', 'country'],
+          },
+          permission_reminder: {
+            type: 'string',
+            description: 'Reminder for contacts about how they joined your list',
+          },
+          campaign_defaults: {
+            type: 'object',
+            description: 'Default values for campaigns sent to this audience',
+            properties: {
+              from_name: {
+                type: 'string',
+                description: 'Default from name for campaigns',
+              },
+              from_email: {
+                type: 'string',
+                description: 'Default from email address for campaigns',
+              },
+              subject: {
+                type: 'string',
+                description: 'Default subject line for campaigns',
+              },
+              language: {
+                type: 'string',
+                description: 'Default language code (e.g., EN_US)',
+              },
+            },
+            required: ['from_name', 'from_email', 'subject', 'language'],
+          },
+          email_type_option: {
+            type: 'boolean',
+            description: 'Whether to allow contacts to choose between HTML and plain-text emails',
+          },
+        },
+        required: ['name', 'contact', 'permission_reminder', 'campaign_defaults', 'email_type_option'],
+      },
+    },
+    {
+      name: 'mc_updateAudience',
+      description: 'Update an existing Mailchimp audience (list). Update name, contact information, permission reminder, campaign defaults, or email type option. All fields are optional - only include fields you want to update.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list) to update',
+          },
+          name: {
+            type: 'string',
+            description: 'The new name of the audience',
+          },
+          contact: {
+            type: 'object',
+            description: 'Contact information for the audience (all fields optional)',
+            properties: {
+              company: {
+                type: 'string',
+                description: 'Company name',
+              },
+              address1: {
+                type: 'string',
+                description: 'Street address',
+              },
+              city: {
+                type: 'string',
+                description: 'City',
+              },
+              state: {
+                type: 'string',
+                description: 'State or province',
+              },
+              zip: {
+                type: 'string',
+                description: 'ZIP or postal code',
+              },
+              country: {
+                type: 'string',
+                description: 'Two-letter ISO 3166-1 country code (e.g., US, CA, GB)',
+              },
+            },
+          },
+          permission_reminder: {
+            type: 'string',
+            description: 'Reminder for contacts about how they joined your list',
+          },
+          campaign_defaults: {
+            type: 'object',
+            description: 'Default values for campaigns sent to this audience (all fields optional)',
+            properties: {
+              from_name: {
+                type: 'string',
+                description: 'Default from name for campaigns',
+              },
+              from_email: {
+                type: 'string',
+                description: 'Default from email address for campaigns',
+              },
+              subject: {
+                type: 'string',
+                description: 'Default subject line for campaigns',
+              },
+              language: {
+                type: 'string',
+                description: 'Default language code (e.g., EN_US)',
+              },
+            },
+          },
+          email_type_option: {
+            type: 'boolean',
+            description: 'Whether to allow contacts to choose between HTML and plain-text emails',
+          },
+        },
+        required: ['audienceId'],
+      },
+    },
+    {
+      name: 'mc_createSegment',
+      description: 'Create a new segment for an audience. Can create static segments (tag-like) or saved segments (with conditions).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          name: {
+            type: 'string',
+            description: 'The name of the segment',
+          },
+          static_segment: {
+            type: 'array',
+            description: 'For static segments: Array of email addresses to include. Leave empty for saved segments.',
+            items: {
+              type: 'string',
+            },
+          },
+          conditions: {
+            type: 'array',
+            description: 'For saved segments: Array of condition objects. Each condition has field, op (operator), and value.',
+            items: {
+              type: 'object',
+            },
+          },
+        },
+        required: ['audienceId', 'name'],
+      },
+    },
+    {
+      name: 'mc_addTagToMember',
+      description: 'Add or remove tags from a member. Tags help organize and segment your audience members.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          email: {
+            type: 'string',
+            description: 'The member\'s email address',
+          },
+          tags: {
+            type: 'array',
+            description: 'Array of tag objects with name and status (active to add, inactive to remove)',
+            items: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  description: 'The name of the tag',
+                },
+                status: {
+                  type: 'string',
+                  enum: ['active', 'inactive'],
+                  description: 'active to add the tag, inactive to remove it',
+                },
+              },
+              required: ['name', 'status'],
+            },
+          },
+        },
+        required: ['audienceId', 'email', 'tags'],
+      },
+    },
+    {
+      name: 'mc_createMergeField',
+      description: 'Create a new merge field (custom field) for an audience. Merge fields store additional information about members.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          name: {
+            type: 'string',
+            description: 'The name of the merge field (e.g., "Birthday", "Company Name")',
+          },
+          type: {
+            type: 'string',
+            enum: ['text', 'number', 'address', 'phone', 'date', 'url', 'imageurl', 'radio', 'dropdown', 'birthday', 'zip'],
+            description: 'The data type of the merge field',
+          },
+          tag: {
+            type: 'string',
+            description: 'The tag used in Mailchimp templates (e.g., "BIRTHDAY", "COMPANY"). Must be uppercase, alphanumeric, and max 10 characters',
+          },
+          required: {
+            type: 'boolean',
+            description: 'Whether this field is required when adding members',
+          },
+          public: {
+            type: 'boolean',
+            description: 'Whether this field is visible to members in their preferences',
+          },
+          default_value: {
+            type: 'string',
+            description: 'Default value for the field',
+          },
+          options: {
+            type: 'object',
+            description: 'Options for dropdown, radio, or other field types',
+            properties: {
+              choices: {
+                type: 'array',
+                description: 'Array of choice strings for dropdown/radio fields',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+        required: ['audienceId', 'name', 'type', 'tag'],
       },
     },
   ];
@@ -524,6 +800,212 @@ export async function handleWriteTool(
           format: generatedImage.format,
         },
       };
+    }
+
+    case 'mc_createAudience': {
+      const schema = z.object({
+        name: z.string().min(1).max(100),
+        contact: z.object({
+          company: z.string().min(1).max(100),
+          address1: z.string().min(1).max(100),
+          city: z.string().min(1).max(50),
+          state: z.string().min(1).max(50),
+          zip: z.string().min(1).max(20),
+          country: z.string().length(2).regex(/^[A-Z]{2}$/, {
+            message: 'Country must be a two-letter ISO 3166-1 code (e.g., US, CA, GB)',
+          }),
+        }),
+        permission_reminder: z.string().min(1).max(500),
+        campaign_defaults: z.object({
+          from_name: z.string().min(1).max(100),
+          from_email: z.string().email().max(254),
+          subject: z.string().min(1).max(200),
+          language: z.string().min(2).max(10),
+        }),
+        email_type_option: z.boolean(),
+      });
+      const params = schema.parse(args);
+      return await client.post('/lists', {
+        name: params.name,
+        contact: params.contact,
+        permission_reminder: params.permission_reminder,
+        campaign_defaults: params.campaign_defaults,
+        email_type_option: params.email_type_option,
+      });
+    }
+
+    case 'mc_updateAudience': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        name: z.string().min(1).max(100).optional(),
+        contact: z.object({
+          company: z.string().min(1).max(100).optional(),
+          address1: z.string().min(1).max(100).optional(),
+          city: z.string().min(1).max(50).optional(),
+          state: z.string().min(1).max(50).optional(),
+          zip: z.string().min(1).max(20).optional(),
+          country: z.string().length(2).regex(/^[A-Z]{2}$/, {
+            message: 'Country must be a two-letter ISO 3166-1 code (e.g., US, CA, GB)',
+          }).optional(),
+        }).optional(),
+        permission_reminder: z.string().min(1).max(500).optional(),
+        campaign_defaults: z.object({
+          from_name: z.string().min(1).max(100).optional(),
+          from_email: z.string().email().max(254).optional(),
+          subject: z.string().min(1).max(200).optional(),
+          language: z.string().min(2).max(10).optional(),
+        }).optional(),
+        email_type_option: z.boolean().optional(),
+      });
+      const params = schema.parse(args);
+      
+      // Validate that at least one field is being updated
+      if (!params.name && !params.contact && !params.permission_reminder && 
+          !params.campaign_defaults && params.email_type_option === undefined) {
+        throw new Error('At least one field must be provided to update (name, contact, permission_reminder, campaign_defaults, or email_type_option)');
+      }
+      
+      const body: {
+        name?: string;
+        contact?: {
+          company?: string;
+          address1?: string;
+          city?: string;
+          state?: string;
+          zip?: string;
+          country?: string;
+        };
+        permission_reminder?: string;
+        campaign_defaults?: {
+          from_name?: string;
+          from_email?: string;
+          subject?: string;
+          language?: string;
+        };
+        email_type_option?: boolean;
+      } = {};
+      
+      if (params.name) {
+        body.name = params.name;
+      }
+      if (params.contact) {
+        body.contact = params.contact;
+      }
+      if (params.permission_reminder) {
+        body.permission_reminder = params.permission_reminder;
+      }
+      if (params.campaign_defaults) {
+        body.campaign_defaults = params.campaign_defaults;
+      }
+      if (params.email_type_option !== undefined) {
+        body.email_type_option = params.email_type_option;
+      }
+      
+      return await client.patch(`/lists/${params.audienceId}`, body);
+    }
+
+    case 'mc_createSegment': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        name: z.string().min(1).max(100),
+        static_segment: z.array(z.string().email()).optional(),
+        conditions: z.array(z.object({
+          field: z.string(),
+          op: z.string(),
+          value: z.union([z.string(), z.number()]),
+        })).optional(),
+      });
+      const params = schema.parse(args);
+      
+      // Must have either static_segment or conditions, but not both
+      if (!params.static_segment && !params.conditions) {
+        throw new Error('Either static_segment or conditions must be provided');
+      }
+      if (params.static_segment && params.conditions) {
+        throw new Error('Cannot provide both static_segment and conditions. Use static_segment for static segments (tags) or conditions for saved segments.');
+      }
+      
+      const body: {
+        name: string;
+        static_segment?: string[];
+        conditions?: Array<{ field: string; op: string; value: string | number }>;
+      } = {
+        name: params.name,
+      };
+      
+      if (params.static_segment) {
+        body.static_segment = params.static_segment;
+      } else if (params.conditions) {
+        body.conditions = params.conditions;
+      }
+      
+      return await client.post(`/lists/${params.audienceId}/segments`, body);
+    }
+
+    case 'mc_addTagToMember': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        email: z.string().email().max(254),
+        tags: z.array(z.object({
+          name: z.string().min(1).max(100),
+          status: z.enum(['active', 'inactive']),
+        })).min(1),
+      });
+      const params = schema.parse(args);
+      
+      // Calculate subscriber hash (MD5 of lowercase email)
+      const emailHash = createHash('md5').update(params.email.toLowerCase()).digest('hex');
+      
+      return await client.post(`/lists/${params.audienceId}/members/${emailHash}/tags`, {
+        tags: params.tags,
+      });
+    }
+
+    case 'mc_createMergeField': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        name: z.string().min(1).max(100),
+        type: z.enum(['text', 'number', 'address', 'phone', 'date', 'url', 'imageurl', 'radio', 'dropdown', 'birthday', 'zip']),
+        tag: z.string().min(1).max(10).regex(/^[A-Z0-9_]+$/, {
+          message: 'Tag must be uppercase alphanumeric with underscores, max 10 characters',
+        }),
+        required: z.boolean().optional(),
+        public: z.boolean().optional(),
+        default_value: z.string().optional(),
+        options: z.object({
+          choices: z.array(z.string()).optional(),
+        }).optional(),
+      });
+      const params = schema.parse(args);
+      
+      const body: {
+        name: string;
+        type: string;
+        tag: string;
+        required?: boolean;
+        public?: boolean;
+        default_value?: string;
+        options?: { choices?: string[] };
+      } = {
+        name: params.name,
+        type: params.type,
+        tag: params.tag,
+      };
+      
+      if (params.required !== undefined) {
+        body.required = params.required;
+      }
+      if (params.public !== undefined) {
+        body.public = params.public;
+      }
+      if (params.default_value !== undefined) {
+        body.default_value = params.default_value;
+      }
+      if (params.options) {
+        body.options = params.options;
+      }
+      
+      return await client.post(`/lists/${params.audienceId}/merge-fields`, body);
     }
 
     default:
