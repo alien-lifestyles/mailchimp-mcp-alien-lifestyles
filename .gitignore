@@ -35,3 +35,10 @@ src/**/*.bak*
 tmp/
 temp/
 
+# Strategy documents (not for public repository)
+GTM_STRATEGY.md
+V2_EXPANSION_PLAN.md
+
+# Security documents (not for public repository)
+SECURITY_FIXES_NOV_2024.md
+TESTING_SECURITY_IMPROVEMENTS.md

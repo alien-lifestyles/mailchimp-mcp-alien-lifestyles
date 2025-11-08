@@ -1,18 +1,22 @@
 {
-  "name": "mailchimp-mcp",
+  "name": "@alien-lifestyles/mailchimp-mcp",
   "version": "1.0.0",
-  "description": "Mailchimp MCP Server for Claude Desktop integration",
+  "description": "Mailchimp MCP Server for Claude Desktop integration - Free (read-only) and Paid (full access) versions",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --dts --out-dir dist --clean",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "setup": "tsx src/setup/server.ts",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mcp",
     "mailchimp",
-    "model-context-protocol"
+    "model-context-protocol",
+    "claude",
+    "email-marketing"
   ],
   "author": "alien-lifestyles",
   "license": "MIT",
@@ -20,12 +24,25 @@
     "type": "git",
     "url": "https://github.com/alien-lifestyles/mailchimp-mcp-alien-lifestyles.git"
   },
+  "homepage": "https://alienlifestyles.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "dotenv": "^16.4.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "express": "^5.1.0",
+    "open": "^10.2.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.5",
     "@types/node": "^20.14.12",
     "tsup": "^8.2.3",
     "tsx": "^4.16.2",
@@ -35,4 +52,3 @@
     "node": ">=20.0.0"
   }
 }
-
