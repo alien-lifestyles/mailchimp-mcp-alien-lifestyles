@@ -1,5 +1,6 @@
 import type { Prompt } from '@modelcontextprotocol/sdk/types.js';
 import { getMailchimpBrandInstructions, getMailchimpBrandInstructionsDemo, getLayoutInstructions, getLayoutInstructionsDemo } from './mailchimp-brand-guidelines.js';
+import { LicenseType } from '../lib/license.js';
 
 /**
  * Mailchimp MCP Prompts
@@ -9,10 +10,22 @@ import { getMailchimpBrandInstructions, getMailchimpBrandInstructionsDemo, getLa
  * 
  * All prompts automatically include Mailchimp brand guidelines
  * for consistent tone, voice, colors, and visual design.
+ * 
+ * Free users get 5 Marketer prompts only.
+ * Paid users get all 30+ prompts.
  */
 
-export function createMailchimpPrompts(): Prompt[] {
-  return [
+// Free users get these 5 Marketer prompts only
+const FREE_USER_PROMPTS = [
+  'marketer-quarterly-report-demo',
+  'marketer-performance-benchmarking',
+  'marketer-roi-analysis',
+  'marketer-optimization-opportunities',
+  'marketer-executive-summary',
+];
+
+export function createMailchimpPrompts(licenseType: LicenseType = LicenseType.FREE): Prompt[] {
+  const allPrompts: Prompt[] = [
     // ============================================
     // MAILCHIMP CSM (Customer Success Manager)
     // ============================================
@@ -183,6 +196,14 @@ export function createMailchimpPrompts(): Prompt[] {
       arguments: [],
     },
   ];
+
+  // Filter prompts based on license type
+  if (licenseType === LicenseType.FREE) {
+    return allPrompts.filter(prompt => FREE_USER_PROMPTS.includes(prompt.name));
+  }
+
+  // Paid users get all prompts
+  return allPrompts;
 }
 
 /**

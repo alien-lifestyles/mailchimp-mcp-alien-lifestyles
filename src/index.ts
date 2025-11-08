@@ -11,6 +11,7 @@ import { MailchimpClient } from './lib/mailchimp-client.js';
 import { createReadTools, handleReadTool } from './tools/read-tools.js';
 import { createWriteTools, handleWriteTool } from './tools/write-tools.js';
 import { createMailchimpPrompts, getPromptTemplate } from './prompts/mailchimp-prompts.js';
+import { getLicenseType, validateLicense, LicenseType, isWriteEnabled } from './lib/license.js';
 
 const API_KEY = process.env.MAILCHIMP_API_KEY;
 // Validate server prefix to prevent SSRF
@@ -19,7 +20,17 @@ const SERVER_PREFIX_INPUT = process.env.MAILCHIMP_SERVER_PREFIX || 'us21';
 const SERVER_PREFIX = VALID_PREFIXES.includes(SERVER_PREFIX_INPUT.toLowerCase()) 
   ? SERVER_PREFIX_INPUT.toLowerCase() 
   : 'us21';
-const READONLY = process.env.MAILCHIMP_READONLY !== 'false';
+
+// License-based feature gating (replaces MAILCHIMP_READONLY)
+const LICENSE_KEY = process.env.MAILCHIMP_LICENSE_KEY;
+const licenseValidation = validateLicense(LICENSE_KEY);
+const LICENSE_TYPE = licenseValidation.type;
+
+// Backward compatibility: MAILCHIMP_READONLY still works but is deprecated
+const READONLY_ENV = process.env.MAILCHIMP_READONLY;
+const READONLY_FROM_ENV = READONLY_ENV !== undefined && READONLY_ENV !== 'false';
+const WRITE_ENABLED = isWriteEnabled() && !READONLY_FROM_ENV;
+
 const CONFIRM_SEND = process.env.CONFIRM_SEND || '';
 const TRANSPORT_MODE = process.env.TRANSPORT_MODE || 'stdio';
 const MASK_PII = process.env.MAILCHIMP_MASK_PII === 'true';
@@ -52,9 +63,9 @@ const server = new Server(
 );
 
 const readTools = createReadTools(client);
-const writeTools = READONLY ? [] : createWriteTools(client, IMAGE_GEN_API_KEYS);
+const writeTools = WRITE_ENABLED ? createWriteTools(client, IMAGE_GEN_API_KEYS) : [];
 const allTools = [...readTools, ...writeTools];
-const prompts = createMailchimpPrompts();
+const prompts = createMailchimpPrompts(LICENSE_TYPE);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -150,9 +161,18 @@ async function main() {
     process.exit(1);
   }
   
+  // Log license status
+  if (LICENSE_TYPE === LicenseType.PAID) {
+    console.error(`✅ Mailchimp MCP server running via stdio. License: PAID (Full access)`);
+  } else {
+    console.error(`✅ Mailchimp MCP server running via stdio. License: FREE (Read-only, 5 prompts)`);
+    if (LICENSE_KEY) {
+      console.error(`⚠️  Invalid license key format. Using FREE license.`);
+    }
+  }
+  
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('✅ Mailchimp MCP server running via stdio.');
 }
 
 main().catch((error) => {
