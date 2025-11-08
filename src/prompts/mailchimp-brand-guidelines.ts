@@ -128,3 +128,101 @@ WHEN CREATING CHARTS, GRAPHS, OR VISUALIZATIONS:
 Apply these guidelines to ALL responses, charts, tables, and visualizations automatically - even if not explicitly requested.`;
 }
 
+/**
+ * Get condensed Mailchimp brand instructions for demo prompts
+ * 
+ * This is a shortened version optimized for demo prompts to reduce token usage
+ * while maintaining essential brand consistency.
+ */
+export function getMailchimpBrandInstructionsDemo(): string {
+  return `BRAND: Use #FFE01B (Mailchimp Yellow) as primary color in charts. Friendly, approachable tone. Clean, modern visuals matching Mailchimp.com aesthetic.`;
+}
+
+/**
+ * Get standardized layout instructions for consistent report structure
+ * 
+ * Ensures all reports, dashboards, and visualizations follow the same
+ * consistent structure and layout patterns.
+ */
+export function getLayoutInstructions(): string {
+  return `STANDARDIZED LAYOUT & STRUCTURE - Apply to ALL responses:
+
+REPORT STRUCTURE (Follow this order consistently):
+1. EXECUTIVE SUMMARY (2-3 sentences at top)
+   - Key takeaway or main insight
+   - Overall performance assessment
+   - One critical finding or recommendation
+
+2. KEY METRICS DASHBOARD (Visual cards/charts section)
+   - Display primary metrics in visual format (cards, charts, or highlighted numbers)
+   - Use Mailchimp yellow (#FFE01B) for primary metrics
+   - Include: Total campaigns, subscribers, open rate, click rate (or relevant metrics)
+   - Make metrics scannable and visually prominent
+
+3. DETAILED ANALYSIS (Organized sections with clear headings)
+   - Use H2 headings for main sections (## Section Name)
+   - Use H3 headings for subsections (### Subsection Name)
+   - Each section should have a clear purpose
+   - Include data visualizations (charts/tables) within relevant sections
+   - Maintain consistent section ordering across similar report types
+
+4. QUARTERLY BREAKDOWN (Standardized table/chart)
+   - Always include quarterly comparison when time-based data is available
+   - Use consistent table format: Quarter | Metric 1 | Metric 2 | Metric 3
+   - Or use bar/line chart with quarters on X-axis
+   - Highlight current/last quarter with Mailchimp yellow
+
+5. RECOMMENDATIONS (Numbered list at end)
+   - 3-5 specific, actionable recommendations
+   - Prioritized by impact
+   - Include brief rationale for each
+
+VISUAL HIERARCHY:
+- H1: Report title (only one per report)
+- H2: Main sections (Executive Summary, Key Metrics, Detailed Analysis, etc.)
+- H3: Subsections within main sections
+- Use bold for key metrics and important numbers
+- Use bullet points for lists
+- Use numbered lists for recommendations or sequential items
+
+DASHBOARD LAYOUT:
+- Metrics at top (visual cards or highlighted numbers)
+- Charts in middle sections (bar charts, line charts, pie charts as appropriate)
+- Tables below charts for detailed data
+- Quarterly breakdown always in consistent location (before recommendations)
+- Recommendations always at bottom
+
+CHART & TABLE STANDARDS:
+- Charts: Always use Mailchimp yellow (#FFE01B) for primary data series
+- Tables: Consistent column headers, left-align text, right-align numbers
+- Table headers: Bold, use Mailchimp yellow background or text color
+- Data alignment: Numbers right-aligned, text left-aligned
+- Include units in headers (e.g., "Open Rate (%)", "Subscribers (Count)")
+- Use consistent date formats (e.g., "Q1 2024", "Jan-Mar 2024")
+
+PAGE STRUCTURE:
+- Start with Executive Summary (brief overview)
+- Follow with visual dashboard (key metrics)
+- Then detailed analysis (organized sections)
+- Include quarterly breakdown (standardized format)
+- End with recommendations (actionable items)
+
+CONSISTENCY REQUIREMENTS:
+- Same section order every time for similar report types
+- Same visual hierarchy (H1 → H2 → H3)
+- Same metric presentation style (cards, charts, or tables)
+- Same quarterly breakdown format
+- Same recommendation structure
+
+Apply these layout standards to ensure every report looks professional, consistent, and easy to scan.`;
+}
+
+/**
+ * Get condensed layout instructions for demo prompts
+ * 
+ * Shortened version optimized for token usage while maintaining structure consistency.
+ */
+export function getLayoutInstructionsDemo(): string {
+  return `LAYOUT: 1) Executive Summary (2-3 sentences), 2) Key Metrics Dashboard (visual cards), 3) Detailed Analysis (H2 sections), 4) Quarterly Breakdown (table/chart), 5) Recommendations (numbered). Use H2 for sections, H3 for subsections. Charts use #FFE01B. Tables: bold headers, right-align numbers.`;
+}
+

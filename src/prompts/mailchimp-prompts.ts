@@ -1,5 +1,5 @@
 import type { Prompt } from '@modelcontextprotocol/sdk/types.js';
-import { getMailchimpBrandInstructions } from './mailchimp-brand-guidelines.js';
+import { getMailchimpBrandInstructions, getMailchimpBrandInstructionsDemo, getLayoutInstructions, getLayoutInstructionsDemo } from './mailchimp-brand-guidelines.js';
 
 /**
  * Mailchimp MCP Prompts
@@ -18,8 +18,8 @@ export function createMailchimpPrompts(): Prompt[] {
     // ============================================
     
     {
-      name: 'csm-account-health-check',
-      description: 'Comprehensive account health check - shows audiences, campaigns, automations, and engagement trends',
+      name: 'csm-account-health-check-demo',
+      description: 'DEMO: Comprehensive account health check - shows audiences, campaigns, automations, and engagement trends',
       arguments: [],
     },
     {
@@ -68,8 +68,8 @@ export function createMailchimpPrompts(): Prompt[] {
     // ============================================
     
     {
-      name: 'marketer-quarterly-report',
-      description: 'Create comprehensive quarterly performance report with metrics, top/bottom campaigns, and trends',
+      name: 'marketer-quarterly-report-demo',
+      description: 'DEMO: Create comprehensive quarterly performance report with metrics, top/bottom campaigns, and trends',
       arguments: [],
     },
     {
@@ -108,8 +108,8 @@ export function createMailchimpPrompts(): Prompt[] {
       arguments: [],
     },
     {
-      name: 'marketer-strategic-health-check',
-      description: 'Quick strategic health check - growth trends, risks, opportunities, and one recommendation',
+      name: 'marketer-strategic-health-check-demo',
+      description: 'DEMO: Quick strategic health check - growth trends, risks, opportunities, and one recommendation',
       arguments: [],
     },
 
@@ -133,8 +133,8 @@ export function createMailchimpPrompts(): Prompt[] {
       arguments: [],
     },
     {
-      name: 'owner-roi-assessment',
-      description: 'Assess marketing ROI - reach, engagement, sales impact, cost per engaged subscriber',
+      name: 'owner-roi-assessment-demo',
+      description: 'DEMO: Assess marketing ROI - reach, engagement, sales impact, cost per engaged subscriber',
       arguments: [],
     },
     {
@@ -168,8 +168,8 @@ export function createMailchimpPrompts(): Prompt[] {
     // ============================================
     
     {
-      name: 'account-audit',
-      description: 'Comprehensive Mailchimp account audit - what\'s set up well, needs improvement, unused features, opportunities',
+      name: 'account-audit-demo',
+      description: 'DEMO: Comprehensive Mailchimp account audit - what\'s set up well, needs improvement, unused features, opportunities',
       arguments: [],
     },
     {
@@ -244,6 +244,9 @@ export function getPromptTemplate(name: string): string {
   // Get Mailchimp brand guidelines (applied to all prompts)
   const brandInstructions = getMailchimpBrandInstructions();
   
+  // Get standardized layout instructions (applied to all prompts)
+  const layoutInstructions = getLayoutInstructions();
+  
   const quarterlyInstruction = `IMPORTANT TIME-BASED REPORTING INSTRUCTIONS:
 1. FIRST: Check for activity in ${lastQuarter} (${lastQuarterStart} to ${lastQuarterEnd}) using since_send_time filter where applicable
 2. IF NO ACTIVITY in last quarter: Fall back to all-time data
@@ -252,17 +255,31 @@ export function getPromptTemplate(name: string): string {
 5. Use ISO 8601 format (${lastQuarterISOStart}) for date filters when querying campaigns
 6. Include a quarterly comparison table or breakdown in your response showing metrics by quarter`;
 
+  // Condensed quarterly instruction for demos (reduces token usage)
+  const quarterlyInstructionDemo = `TIME: Check ${lastQuarter} first, fallback to all-time. Include quarterly breakdown (Q1-Q4).`;
+
   const accountHealthInstruction = `ACCOUNT HEALTH CHECK REQUIREMENTS (for account health, audit, and strategic prompts):
 - ALWAYS check domain authentication status using mc_listVerifiedDomains or mc_getVerifiedDomain
 - Report on verification status, DKIM, SPF, and DMARC authentication for all domains
 - Flag any domains that are not verified or authenticated (this impacts email deliverability)
 - Include domain authentication status in any account health summary`;
 
-  // Combine brand, quarterly, and account health instructions
-  const baseInstructions = `${brandInstructions}\n\n${quarterlyInstruction}\n\n${accountHealthInstruction}`;
+  // Condensed account health instruction for demos
+  const accountHealthInstructionDemo = `HEALTH: Check domain auth status. Report DKIM/SPF/DMARC. Flag unverified domains.`;
+
+  // Condensed demo-specific masking instructions (CRITICAL for demo safety, optimized for token usage)
+  const demoMaskingInstruction = `DEMO SAFETY: Replace domains/campaigns/subjects with generic placeholders (e.g., "example.com", "Q4 Newsletter", "Monthly Update"). Never show first+last names together. Use generic labels in all visuals. Anonymize all identifying data.`;
+
+  // Combine brand, layout, quarterly, and account health instructions
+  const baseInstructions = `${brandInstructions}\n\n${layoutInstructions}\n\n${quarterlyInstruction}\n\n${accountHealthInstruction}`;
+  
+  // Demo instructions use condensed versions to reduce token usage
+  const brandInstructionsDemo = getMailchimpBrandInstructionsDemo();
+  const layoutInstructionsDemo = getLayoutInstructionsDemo();
+  const demoBaseInstructions = `${brandInstructionsDemo}\n\n${layoutInstructionsDemo}\n\n${quarterlyInstructionDemo}\n\n${accountHealthInstructionDemo}\n\n${demoMaskingInstruction}`;
   
   const prompts: Record<string, string> = {
-    'csm-account-health-check': `${baseInstructions}
+    'csm-account-health-check-demo': `${demoBaseInstructions}
 
 Give me a complete account health check. Show me:
 - Total audiences and member counts
@@ -345,7 +362,7 @@ Customer questions their subscriber count. Verify:
 - Explain any discrepancies
 - Include quarterly growth trends showing subscriber changes by quarter`,
 
-    'marketer-quarterly-report': `${baseInstructions}
+    'marketer-quarterly-report-demo': `${demoBaseInstructions}
 
 Create a comprehensive ${lastQuarter} performance report:
 - List all campaigns sent in ${lastQuarter} (if no activity, show all-time with quarterly breakdown)
@@ -426,7 +443,7 @@ Give me a quick snapshot of campaigns:
 - One insight per campaign
 - Include quarterly breakdown showing which quarter each campaign belongs to`,
 
-    'marketer-strategic-health-check': `${baseInstructions}
+    'marketer-strategic-health-check-demo': `${demoBaseInstructions}
 
 Quick health check for executive review:
 - Are we growing or shrinking our list? (compare ${lastQuarter} to previous quarters)
@@ -465,7 +482,7 @@ Quick check on our email list:
 - Is our list healthy?
 - Include quarterly growth and engagement trends`,
 
-    'owner-roi-assessment': `${baseInstructions}
+    'owner-roi-assessment-demo': `${demoBaseInstructions}
 
 Show me the business value of our email marketing:
 - How many people are we reaching? (${lastQuarter} first, with quarterly breakdown)
@@ -523,7 +540,7 @@ I'm thinking about expanding our email marketing. What does our data say?
 - What are the risks?
 - Include quarterly growth projections`,
 
-    'account-audit': `${baseInstructions}
+    'account-audit-demo': `${demoBaseInstructions}
 
 Create a comprehensive Mailchimp account audit:
 - What's set up well?
