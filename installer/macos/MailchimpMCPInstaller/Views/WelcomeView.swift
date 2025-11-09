@@ -49,7 +49,7 @@ class WelcomeView: NSView {
     
     private let termsLinkButton: NSButton = {
         let button = NSButton(title: "View Terms of Service", target: nil, action: nil)
-        button.bezelStyle = .link
+        button.bezelStyle = .inline
         button.font = NSFont.systemFont(ofSize: 12)
         return button
     }()

@@ -252,7 +252,7 @@ npm run dev           # Development mode with watch
 npm run build         # Build project
 npm start             # Run built server
 npm run setup         # Launch setup UI
-npm run build:installer  # Build macOS installer and uninstaller apps (requires Xcode)
+npm run build:installer  # Build macOS installer and uninstaller apps (requires Xcode and XcodeGen: brew install xcodegen)
 ```
 
 ## Security

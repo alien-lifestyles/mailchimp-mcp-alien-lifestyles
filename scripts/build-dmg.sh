@@ -23,9 +23,9 @@ echo -e "${GREEN}Creating DMG package...${NC}"
 # Create dist directory if it doesn't exist
 mkdir -p "$DIST_DIR"
 
-# Check if apps exist
-INSTALLER_APP="$INSTALLER_DIR/MailchimpMCPInstaller/build/Release/MailchimpMCPInstaller.app"
-UNINSTALLER_APP="$INSTALLER_DIR/MailchimpMCPUninstaller/build/Release/MailchimpMCPUninstaller.app"
+# Check if apps exist (using derivedDataPath from build script)
+INSTALLER_APP="$INSTALLER_DIR/MailchimpMCPInstaller/build/Build/Products/Release/MailchimpMCPInstaller.app"
+UNINSTALLER_APP="$INSTALLER_DIR/MailchimpMCPUninstaller/build/Build/Products/Release/MailchimpMCPUninstaller.app"
 
 if [ ! -d "$INSTALLER_APP" ]; then
     echo -e "${RED}Error: Installer app not found at $INSTALLER_APP${NC}"

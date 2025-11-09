@@ -32,15 +32,67 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
     exit 1
 fi
 
-INSTALLER_PROJECT="$INSTALLER_DIR/MailchimpMCPInstaller.xcodeproj"
-UNINSTALLER_PROJECT="$INSTALLER_DIR/MailchimpMCPUninstaller.xcodeproj"
+INSTALLER_PROJECT="$INSTALLER_DIR/MailchimpMCPInstaller/MailchimpMCPInstaller.xcodeproj"
+UNINSTALLER_PROJECT="$INSTALLER_DIR/MailchimpMCPUninstaller/MailchimpMCPUninstaller.xcodeproj"
+INSTALLER_PROJECT_YML="$INSTALLER_DIR/MailchimpMCPInstaller/project.yml"
+UNINSTALLER_PROJECT_YML="$INSTALLER_DIR/MailchimpMCPUninstaller/project.yml"
 
-# Check if Xcode projects exist
-if [ ! -d "$INSTALLER_PROJECT" ] && [ ! -f "$INSTALLER_DIR/MailchimpMCPInstaller/Package.swift" ]; then
-    echo -e "${YELLOW}Warning: Xcode project not found.${NC}"
-    echo -e "${YELLOW}Creating Xcode project structure...${NC}"
-    echo -e "${YELLOW}Note: You'll need to create the Xcode projects manually using Xcode.${NC}"
-    echo -e "${YELLOW}The Swift source files are ready in: $INSTALLER_DIR${NC}\n"
+# Function to check for XcodeGen
+check_xcodegen() {
+    if ! command -v xcodegen &> /dev/null; then
+        echo -e "${RED}Error: XcodeGen is not installed${NC}"
+        echo -e "${YELLOW}Installation:${NC}"
+        echo -e "  brew install xcodegen"
+        echo -e ""
+        echo -e "Or run: ${BLUE}$SCRIPT_DIR/check-xcodegen.sh${NC} for more options\n"
+        exit 1
+    fi
+}
+
+# Function to generate Xcode project
+generate_project() {
+    local PROJECT_DIR="$1"
+    local PROJECT_YML="$2"
+    local PROJECT_NAME="$3"
+    
+    if [ ! -f "$PROJECT_YML" ]; then
+        echo -e "${RED}Error: project.yml not found at: $PROJECT_YML${NC}"
+        return 1
+    fi
+    
+    echo -e "${BLUE}Generating $PROJECT_NAME Xcode project...${NC}"
+    cd "$PROJECT_DIR"
+    
+    if xcodegen generate; then
+        echo -e "${GREEN}✅ $PROJECT_NAME project generated successfully${NC}\n"
+        return 0
+    else
+        echo -e "${RED}❌ Failed to generate $PROJECT_NAME project${NC}"
+        return 1
+    fi
+}
+
+# Check if Xcode projects exist, generate if needed
+if [ ! -d "$INSTALLER_PROJECT" ] || [ ! -d "$UNINSTALLER_PROJECT" ]; then
+    echo -e "${YELLOW}Xcode projects not found. Checking for XcodeGen...${NC}\n"
+    check_xcodegen
+    
+    # Generate installer project if needed
+    if [ ! -d "$INSTALLER_PROJECT" ]; then
+        if ! generate_project "$INSTALLER_DIR/MailchimpMCPInstaller" "$INSTALLER_PROJECT_YML" "Installer"; then
+            exit 1
+        fi
+    fi
+    
+    # Generate uninstaller project if needed
+    if [ ! -d "$UNINSTALLER_PROJECT" ]; then
+        if ! generate_project "$INSTALLER_DIR/MailchimpMCPUninstaller" "$UNINSTALLER_PROJECT_YML" "Uninstaller"; then
+            exit 1
+        fi
+    fi
+    
+    # Return to project root
+    cd "$PROJECT_ROOT"
 fi
 
 # Build installer if project exists
@@ -84,12 +136,16 @@ else
 fi
 
 # Create DMG if both apps were built
-if [ -d "$INSTALLER_DIR/MailchimpMCPInstaller/build/Release/MailchimpMCPInstaller.app" ] && \
-   [ -d "$INSTALLER_DIR/MailchimpMCPUninstaller/build/Release/MailchimpMCPUninstaller.app" ]; then
+INSTALLER_APP="$INSTALLER_DIR/MailchimpMCPInstaller/build/Build/Products/Release/MailchimpMCPInstaller.app"
+UNINSTALLER_APP="$INSTALLER_DIR/MailchimpMCPUninstaller/build/Build/Products/Release/MailchimpMCPUninstaller.app"
+
+if [ -d "$INSTALLER_APP" ] && [ -d "$UNINSTALLER_APP" ]; then
     echo -e "${GREEN}Creating DMG package...${NC}"
     "$SCRIPT_DIR/build-dmg.sh"
 else
     echo -e "${YELLOW}⚠️  Skipping DMG creation. One or both apps were not built.${NC}"
+    echo -e "${YELLOW}   Installer: $INSTALLER_APP${NC}"
+    echo -e "${YELLOW}   Uninstaller: $UNINSTALLER_APP${NC}"
 fi
 
 echo -e "\n${GREEN}═══════════════════════════════════════════════════════════════${NC}"

@@ -9,26 +9,29 @@
 
 ## Next Steps (After Xcode is Updated)
 
-### 1. Create Xcode Projects
+### 1. Install XcodeGen
 
-Follow the guide in `installer/macos/CREATE_XCODE_PROJECTS.md`:
+Xcode projects are now automatically generated using XcodeGen:
 
-- Create `MailchimpMCPInstaller.xcodeproj` in `installer/macos/`
-- Create `MailchimpMCPUninstaller.xcodeproj` in `installer/macos/`
-- Add all Swift files to each project
-- Configure build settings (macOS 11.0+, code signing)
+```bash
+brew install xcodegen
+```
 
 ### 2. Build the Apps
 
-Once Xcode projects are created:
+The build process is fully automated:
 
 ```bash
 npm run build:installer
 ```
 
 This will:
+- Check for XcodeGen and install if needed
+- Automatically generate Xcode projects from `project.yml` files
 - Build both installer and uninstaller apps
 - Create a DMG file at `dist/MailchimpMCPInstaller.dmg`
+
+No manual Xcode project creation needed!
 
 ### 3. Test the Installer
 
@@ -59,7 +62,7 @@ All Swift source files are ready in:
 
 ## Documentation
 
-- `installer/macos/CREATE_XCODE_PROJECTS.md` - Step-by-step Xcode project creation
+- `installer/macos/CREATE_XCODE_PROJECTS.md` - XcodeGen setup and usage
 - `installer/macos/README.md` - Build instructions
 - `installer/macos/IMPLEMENTATION_SUMMARY.md` - Complete implementation details
 

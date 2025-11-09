@@ -13,7 +13,7 @@
 	<key>CFBundleName</key>
 	<string>Mailchimp MCP Installer</string>
 	<key>CFBundlePackageType</key>
-	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
@@ -28,4 +28,3 @@
 	<true/>
 </dict>
 </plist>
-

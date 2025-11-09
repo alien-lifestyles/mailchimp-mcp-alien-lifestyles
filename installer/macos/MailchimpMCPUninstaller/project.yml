@@ -1,0 +1,67 @@
+name: MailchimpMCPUninstaller
+options:
+  bundleIdPrefix: com.alienlifestyles
+  deploymentTarget:
+    macOS: "11.0"
+  developmentLanguage: en
+  xcodeVersion: "13.0"
+  usesTabs: false
+  indentWidth: 4
+  tabWidth: 4
+
+targets:
+  MailchimpMCPUninstaller:
+    type: application
+    platform: macOS
+    deploymentTarget: "11.0"
+    sources:
+      - path: .
+        excludes:
+          - "*.xcodeproj"
+          - "*.xcworkspace"
+          - "build"
+          - "project.yml"
+    info:
+      path: Info.plist
+      properties:
+        CFBundleIdentifier: com.alienlifestyles.mailchimp-mcp-uninstaller
+        CFBundleName: Mailchimp MCP Uninstaller
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        CFBundlePackageType: APPL
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "Copyright © 2024 Alien Lifestyles. All rights reserved."
+        NSPrincipalClass: NSApplication
+        NSSupportsAutomaticGraphicsSwitching: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.alienlifestyles.mailchimp-mcp-uninstaller
+        MACOSX_DEPLOYMENT_TARGET: "11.0"
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""
+        INFOPLIST_FILE: Info.plist
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2024 Alien Lifestyles. All rights reserved."
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        INFOPLIST_KEY_NSSupportsAutomaticGraphicsSwitching: true
+        SWIFT_OBJC_BRIDGING_HEADER: ""
+        SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: "-O"
+
+schemes:
+  MailchimpMCPUninstaller:
+    build:
+      targets:
+        MailchimpMCPUninstaller: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+

@@ -1,0 +1,379 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6E966DEB5D91EC7712182C05 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9BC120F31BB9856100F920 /* PermissionService.swift */; };
+		71FE0362FBC7043B1F16F003 /* TERMS.md in Resources */ = {isa = PBXBuildFile; fileRef = B9719158C5FBFEF213FC69BD /* TERMS.md */; };
+		869FC9136E0F1F48054BAB63 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1F1053FCE04F05B0B083E3 /* ProgressView.swift */; };
+		96FD0B1551376BE3BC5DB1A7 /* MailchimpMCPInstallerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35E39A004EA6340A03207A5 /* MailchimpMCPInstallerApp.swift */; };
+		A6E6216F471744B451F5C9E5 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C111A279CFD3A727A05A5A /* WelcomeView.swift */; };
+		A70D5488B27D377DB06B9C63 /* InstallerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DAA29C4F66D399EE64C83F0 /* InstallerService.swift */; };
+		C643F7BE34276B0D7E89ECC1 /* CompletionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18923A57D2E84813560AF33 /* CompletionView.swift */; };
+		D06FE2508CA156CF529A2072 /* InstallerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757819F108695C26A5FB0F24 /* InstallerWindowController.swift */; };
+		D0C9AE924F68C0BE6BD45037 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6FA7D9E4D567428AF56E88 /* ErrorView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3E6FA7D9E4D567428AF56E88 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		4DAA29C4F66D399EE64C83F0 /* InstallerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallerService.swift; sourceTree = "<group>"; };
+		730CE7AC4515CC9037500A94 /* MailchimpMCPInstaller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MailchimpMCPInstaller.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		757819F108695C26A5FB0F24 /* InstallerWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallerWindowController.swift; sourceTree = "<group>"; };
+		7E9BC120F31BB9856100F920 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		9C1F1053FCE04F05B0B083E3 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		9D1BBC950BC545F4223CE972 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A9C111A279CFD3A727A05A5A /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		B9719158C5FBFEF213FC69BD /* TERMS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TERMS.md; sourceTree = "<group>"; };
+		F18923A57D2E84813560AF33 /* CompletionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionView.swift; sourceTree = "<group>"; };
+		F35E39A004EA6340A03207A5 /* MailchimpMCPInstallerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailchimpMCPInstallerApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		71EE1D271A01948B7940F144 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				4DAA29C4F66D399EE64C83F0 /* InstallerService.swift */,
+				7E9BC120F31BB9856100F920 /* PermissionService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A13E18BC5BFBE13410FD175F /* MailchimpMCPInstaller */ = {
+			isa = PBXGroup;
+			children = (
+				9D1BBC950BC545F4223CE972 /* Info.plist */,
+				757819F108695C26A5FB0F24 /* InstallerWindowController.swift */,
+				F35E39A004EA6340A03207A5 /* MailchimpMCPInstallerApp.swift */,
+				D23DB1E584E1CFE76D5A945A /* Resources */,
+				71EE1D271A01948B7940F144 /* Services */,
+				B1D4A0EBDA2978FBD1F4F763 /* Views */,
+			);
+			name = MailchimpMCPInstaller;
+			path = .;
+			sourceTree = "<group>";
+		};
+		B1D4A0EBDA2978FBD1F4F763 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F18923A57D2E84813560AF33 /* CompletionView.swift */,
+				3E6FA7D9E4D567428AF56E88 /* ErrorView.swift */,
+				9C1F1053FCE04F05B0B083E3 /* ProgressView.swift */,
+				A9C111A279CFD3A727A05A5A /* WelcomeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B479C903FFF4A01505D5C78F = {
+			isa = PBXGroup;
+			children = (
+				A13E18BC5BFBE13410FD175F /* MailchimpMCPInstaller */,
+				D23DB1E584E1CFE76D5A945A /* Resources */,
+				71EE1D271A01948B7940F144 /* Services */,
+				B1D4A0EBDA2978FBD1F4F763 /* Views */,
+				B7E99C501F1B9C118ECC851B /* Products */,
+			);
+			indentWidth = 4;
+			sourceTree = "<group>";
+			tabWidth = 4;
+			usesTabs = 0;
+		};
+		B7E99C501F1B9C118ECC851B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				730CE7AC4515CC9037500A94 /* MailchimpMCPInstaller.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D23DB1E584E1CFE76D5A945A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B9719158C5FBFEF213FC69BD /* TERMS.md */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		38018475F62AB40EA9A29486 /* MailchimpMCPInstaller */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 750A29F567D674915CE48634 /* Build configuration list for PBXNativeTarget "MailchimpMCPInstaller" */;
+			buildPhases = (
+				82CF2D61F00B7E75E3B9FBAF /* Sources */,
+				BD9F67264B035C6C1BC6FFEB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MailchimpMCPInstaller;
+			packageProductDependencies = (
+			);
+			productName = MailchimpMCPInstaller;
+			productReference = 730CE7AC4515CC9037500A94 /* MailchimpMCPInstaller.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00396D0D4636D8E799EF7913 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1300;
+				TargetAttributes = {
+					38018475F62AB40EA9A29486 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B39CD6F8F8D6992B0E155AC7 /* Build configuration list for PBXProject "MailchimpMCPInstaller" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B479C903FFF4A01505D5C78F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				38018475F62AB40EA9A29486 /* MailchimpMCPInstaller */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BD9F67264B035C6C1BC6FFEB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71FE0362FBC7043B1F16F003 /* TERMS.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		82CF2D61F00B7E75E3B9FBAF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C643F7BE34276B0D7E89ECC1 /* CompletionView.swift in Sources */,
+				D0C9AE924F68C0BE6BD45037 /* ErrorView.swift in Sources */,
+				A70D5488B27D377DB06B9C63 /* InstallerService.swift in Sources */,
+				D06FE2508CA156CF529A2072 /* InstallerWindowController.swift in Sources */,
+				96FD0B1551376BE3BC5DB1A7 /* MailchimpMCPInstallerApp.swift in Sources */,
+				6E966DEB5D91EC7712182C05 /* PermissionService.swift in Sources */,
+				869FC9136E0F1F48054BAB63 /* ProgressView.swift in Sources */,
+				A6E6216F471744B451F5C9E5 /* WelcomeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1844A689D3697D86ABD5ABBF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Alien Lifestyles. All rights reserved.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				INFOPLIST_KEY_NSSupportsAutomaticGraphicsSwitching = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.alienlifestyles.mailchimp-mcp-installer";
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		29E15600F3B5CFE469C8F9D0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8F87CCAC8004E394F0223FB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Alien Lifestyles. All rights reserved.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				INFOPLIST_KEY_NSSupportsAutomaticGraphicsSwitching = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.alienlifestyles.mailchimp-mcp-installer";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		CB6919FA9E27CC93DE25DB31 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		750A29F567D674915CE48634 /* Build configuration list for PBXNativeTarget "MailchimpMCPInstaller" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F87CCAC8004E394F0223FB1 /* Debug */,
+				1844A689D3697D86ABD5ABBF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B39CD6F8F8D6992B0E155AC7 /* Build configuration list for PBXProject "MailchimpMCPInstaller" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB6919FA9E27CC93DE25DB31 /* Debug */,
+				29E15600F3B5CFE469C8F9D0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00396D0D4636D8E799EF7913 /* Project object */;
+}
