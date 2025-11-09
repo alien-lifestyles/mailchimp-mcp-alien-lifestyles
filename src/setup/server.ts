@@ -63,8 +63,84 @@ function readClaudeDesktopConfig(): { config: any; exists: boolean; error?: stri
   }
 }
 
-// Update Claude Desktop config with license key
-function updateClaudeDesktopConfig(licenseKey: string | null): { success: boolean; message: string; path?: string } {
+// Find the global package installation path
+function findGlobalPackagePath(): string | null {
+  try {
+    const { execSync } = require('child_process');
+    
+    // Try npm list to find the package
+    try {
+      const listOutput = execSync('npm list -g @alien-lifestyles/mailchimp-mcp --depth=0 --json', { 
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'ignore']
+      });
+      const parsed = JSON.parse(listOutput);
+      if (parsed.dependencies && parsed.dependencies['@alien-lifestyles/mailchimp-mcp']) {
+        const path = parsed.dependencies['@alien-lifestyles/mailchimp-mcp'].resolved;
+        if (path && existsSync(join(path, 'dist', 'index.js'))) {
+          return path;
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+    
+    // Try common global npm locations
+    const platform = process.platform;
+    const possiblePaths = [];
+    
+    if (platform === 'darwin' || platform === 'linux') {
+      possiblePaths.push(
+        '/usr/local/lib/node_modules/@alien-lifestyles/mailchimp-mcp',
+        join(process.env.HOME || '', '.npm-global/lib/node_modules/@alien-lifestyles/mailchimp-mcp'),
+        join(process.env.HOME || '', '.nvm/versions/node', process.version, 'lib/node_modules/@alien-lifestyles/mailchimp-mcp')
+      );
+    } else if (platform === 'win32') {
+      const appData = process.env.APPDATA || '';
+      possiblePaths.push(
+        join(appData, 'npm/node_modules/@alien-lifestyles/mailchimp-mcp')
+      );
+    }
+    
+    for (const path of possiblePaths) {
+      if (existsSync(join(path, 'dist', 'index.js'))) {
+        return path;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+// Get Node.js executable path
+function getNodePath(): string {
+  try {
+    const { execSync } = require('child_process');
+    // Try to find node in PATH
+    if (process.platform === 'win32') {
+      return execSync('where node', { encoding: 'utf-8' }).trim().split('\n')[0];
+    } else {
+      return execSync('which node', { encoding: 'utf-8' }).trim();
+    }
+  } catch (error) {
+    // Fallback to common locations
+    if (process.platform === 'win32') {
+      return 'node';
+    } else {
+      return '/usr/local/bin/node';
+    }
+  }
+}
+
+// Update Claude Desktop config with license key and API settings
+function updateClaudeDesktopConfig(
+  licenseKey: string | null,
+  apiKey?: string,
+  serverPrefix?: string,
+  maskPii?: boolean
+): { success: boolean; message: string; path?: string } {
   const configPath = getClaudeDesktopConfigPath();
   const configDir = join(configPath, '..');
   
@@ -96,19 +172,50 @@ function updateClaudeDesktopConfig(licenseKey: string | null): { success: boolea
       config.mcpServers = {};
     }
     
+    // Find the package path (global or local)
+    const globalPath = findGlobalPackagePath();
+    const packagePath = globalPath || process.cwd();
+    const nodePath = getNodePath();
+    
+    console.log('[updateClaudeDesktopConfig] Package path:', packagePath);
+    console.log('[updateClaudeDesktopConfig] Node path:', nodePath);
+    
     // Ensure mailchimp-mcp server config exists
     if (!config.mcpServers['mailchimp-mcp']) {
       config.mcpServers['mailchimp-mcp'] = {
-        command: '/usr/local/bin/node',
-        args: [join(process.cwd(), 'dist', 'index.js')],
-        cwd: process.cwd(),
+        command: nodePath,
+        args: [join(packagePath, 'dist', 'index.js')],
+        cwd: packagePath,
         env: {},
       };
+    } else {
+      // Update paths if they exist
+      config.mcpServers['mailchimp-mcp'].command = nodePath;
+      config.mcpServers['mailchimp-mcp'].args = [join(packagePath, 'dist', 'index.js')];
+      config.mcpServers['mailchimp-mcp'].cwd = packagePath;
     }
     
     // Ensure env object exists
     if (!config.mcpServers['mailchimp-mcp'].env) {
       config.mcpServers['mailchimp-mcp'].env = {};
+    }
+    
+    // Update API key if provided
+    if (apiKey) {
+      config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_API_KEY = apiKey;
+      console.log('[updateClaudeDesktopConfig] ✅ API key set in config');
+    }
+    
+    // Update server prefix if provided
+    if (serverPrefix) {
+      config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_SERVER_PREFIX = serverPrefix;
+      console.log('[updateClaudeDesktopConfig] ✅ Server prefix set:', serverPrefix);
+    }
+    
+    // Update mask PII if provided
+    if (maskPii !== undefined) {
+      config.mcpServers['mailchimp-mcp'].env.MAILCHIMP_MASK_PII = maskPii ? 'true' : 'false';
+      console.log('[updateClaudeDesktopConfig] ✅ Mask PII set:', maskPii);
     }
     
     // Update license key
@@ -291,7 +398,12 @@ app.post('/api/config', (req, res) => {
       // Always call updateClaudeDesktopConfig, even if licenseKeyToSave is null/undefined
       // This ensures we update the config file (removing the key if it's empty)
       console.log('About to call updateClaudeDesktopConfig...');
-      claudeConfigResult = updateClaudeDesktopConfig(licenseKeyToSave);
+      claudeConfigResult = updateClaudeDesktopConfig(
+        licenseKeyToSave || null,
+        newEnv.MAILCHIMP_API_KEY,
+        newEnv.MAILCHIMP_SERVER_PREFIX,
+        newEnv.MAILCHIMP_MASK_PII === 'true'
+      );
       console.log('Function returned:', JSON.stringify(claudeConfigResult, null, 2));
       
       if (!claudeConfigResult.success) {
@@ -358,19 +470,20 @@ app.post('/api/config', (req, res) => {
       try {
         const verifyResult = readClaudeDesktopConfig();
         const verifyKey = verifyResult.config?.mcpServers?.['mailchimp-mcp']?.env?.MAILCHIMP_LICENSE_KEY;
+        const expectedKey = newEnv.MAILCHIMP_LICENSE_KEY || null;
         if (verifyKey) {
           message += `  📝 License Key: ${maskValue(verifyKey)}\n`;
           message += `  🎫 License Type: ${verifyKey.match(/^ALIEN-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) ? 'PAID ⭐' : 'FREE 🆓'}\n`;
           
           // Check if keys match
-          if (verifyKey === licenseKeyToSave) {
+          if (verifyKey === expectedKey) {
             message += '  ✅ Keys are in sync\n';
           } else {
-            message += `  ⚠️  Keys don't match (expected: ${maskValue(licenseKeyToSave || '')}, got: ${maskValue(verifyKey)})\n`;
+            message += `  ⚠️  Keys don't match (expected: ${maskValue(expectedKey || '')}, got: ${maskValue(verifyKey)})\n`;
           }
         } else {
           message += '  🆓 License Type: FREE (No license key)\n';
-          if (licenseKeyToSave) {
+          if (expectedKey) {
             message += '  ⚠️  Warning: License key was not found in config file\n';
           }
         }
@@ -430,8 +543,13 @@ app.get('/api/claude-config', (req, res) => {
 // API to manually update Claude Desktop config (for testing)
 app.post('/api/claude-config/update', (req, res) => {
   try {
-    const { licenseKey } = req.body;
-    const result = updateClaudeDesktopConfig(licenseKey || null);
+    const { licenseKey, apiKey, serverPrefix, maskPii } = req.body;
+    const result = updateClaudeDesktopConfig(
+      licenseKey || null,
+      apiKey,
+      serverPrefix,
+      maskPii
+    );
     res.json(result);
   } catch (error) {
     res.status(500).json({

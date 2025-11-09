@@ -14,25 +14,88 @@ A Model Context Protocol (MCP) server for integrating Mailchimp with Claude Desk
 
 ## Quick Start
 
-### Installation
+> 💡 **New to Mailchimp MCP?** See [INSTALL.md](./INSTALL.md) for detailed installation instructions and troubleshooting.
+
+### 🚀 Installation Options
+
+#### Option 1: macOS Installer App (Recommended for macOS)
+
+Download the DMG file from [GitHub Releases](https://github.com/alien-lifestyles/mailchimp-mcp-alien-lifestyles/releases):
+
+1. Download `MailchimpMCPInstaller.dmg`
+2. Open the DMG file
+3. Double-click `MailchimpMCPInstaller.app`
+4. Follow the installation wizard
+5. Enter your Mailchimp API key when prompted
+6. Restart Claude Desktop
+
+The installer will:
+- ✅ Check prerequisites (Node.js, npm)
+- ✅ Install the package globally
+- ✅ Launch the setup UI in your browser
+- ✅ Automatically configure Claude Desktop
+- ✅ Validate that Claude Desktop will auto-start Mailchimp MCP
+
+**Uninstaller:** The DMG also includes `MailchimpMCPUninstaller.app` to completely remove Mailchimp MCP and all associated data.
+
+#### Option 2: Command Line (All Platforms)
+
+**For macOS:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/alien-lifestyles/mailchimp-mcp-alien-lifestyles/main/install.sh | bash
+```
+
+**For All Platforms (using npx):**
+
+```bash
+npx -y @alien-lifestyles/mailchimp-mcp mailchimp-mcp-install
+```
+
+**Manual Install:**
+
+```bash
+npm install -g @alien-lifestyles/mailchimp-mcp && mailchimp-mcp-setup
+```
+
+### 📝 Step-by-Step Installation
+
+**Step 1: Install**
 
 ```bash
 npm install -g @alien-lifestyles/mailchimp-mcp
 ```
 
-### Configuration
+**Step 2: Run Setup**
 
-**Option 1: Setup UI (Recommended)**
+```bash
+mailchimp-mcp-setup
+```
 
+Or if installed locally:
 ```bash
 npm run setup
 ```
 
-Opens a local web interface at `http://localhost:3000` for secure key entry.
+**Step 3: Configure**
 
-**Option 2: Manual Configuration**
+The setup UI will open in your browser at `http://localhost:3000`. Enter:
+- ✅ Your Mailchimp API key (required)
+- ✅ Server prefix (auto-detected from API key)
+- ⭐ License key (optional - for paid features)
+- 🔒 Privacy settings (PII masking recommended)
 
-Create a `.env` file:
+**Step 4: Restart Claude Desktop**
+
+After saving your configuration, restart Claude Desktop completely for changes to take effect.
+
+**Step 5: Test**
+
+Ask Claude: "Can you run mc_ping?" to verify the connection.
+
+### 🔧 Manual Configuration (Advanced)
+
+If you prefer manual setup, create a `.env` file:
 
 ```bash
 # Required
@@ -42,21 +105,22 @@ MAILCHIMP_SERVER_PREFIX=us9
 # Optional
 MAILCHIMP_LICENSE_KEY=ALIEN-XXXX-XXXX-XXXX
 MAILCHIMP_MASK_PII=true
-MAILCHIMP_READONLY=true
 ```
 
-### Claude Desktop Setup
+Then manually edit Claude Desktop config at:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
-1. Open Claude Desktop → Settings → Developer → Edit Config
-2. Add configuration:
+Add:
 
 ```json
 {
   "mcpServers": {
     "mailchimp-mcp": {
-      "command": "/usr/local/bin/node",
-      "args": ["/path/to/mailchimp-mcp/dist/index.js"],
-      "cwd": "/path/to/mailchimp-mcp",
+      "command": "node",
+      "args": ["/path/to/@alien-lifestyles/mailchimp-mcp/dist/index.js"],
+      "cwd": "/path/to/@alien-lifestyles/mailchimp-mcp",
       "env": {
         "MAILCHIMP_API_KEY": "your_api_key_here-us9",
         "MAILCHIMP_SERVER_PREFIX": "us9",
@@ -66,9 +130,6 @@ MAILCHIMP_READONLY=true
   }
 }
 ```
-
-3. Restart Claude Desktop
-4. Test: Ask Claude "Can you run mc_ping?"
 
 ## Free vs Paid Versions
 
@@ -187,10 +248,11 @@ See [USE_CASES.md](./USE_CASES.md) for more examples.
 ## Development
 
 ```bash
-npm run dev    # Development mode with watch
-npm run build  # Build project
-npm start      # Run built server
-npm run setup  # Launch setup UI
+npm run dev           # Development mode with watch
+npm run build         # Build project
+npm start             # Run built server
+npm run setup         # Launch setup UI
+npm run build:installer  # Build macOS installer and uninstaller apps (requires Xcode)
 ```
 
 ## Security
