@@ -107,18 +107,47 @@ MAILCHIMP_READONLY=true
 
 | Tool | Description |
 |------|-------------|
+| **Campaigns** | |
 | `mc_createCampaign` | Create new campaign |
+| `mc_updateCampaign` | Update campaign settings |
 | `mc_setCampaignContent` | Set campaign content |
 | `mc_sendCampaign` | Send campaign |
+| `mc_deleteCampaign` | Delete campaign |
+| **Templates** | |
 | `mc_createTemplate` | Create template with MTL validation |
 | `mc_updateTemplate` | Update template |
 | `mc_deleteTemplate` | Delete template |
+| **Files & Folders** | |
 | `mc_uploadFile` | Upload file to File Manager |
+| `mc_deleteFile` | Delete file from File Manager |
+| `mc_createTemplateFolder` | Create template folder |
+| `mc_deleteTemplateFolder` | Delete template folder |
+| `mc_createFileFolder` | Create file folder |
+| `mc_deleteFileFolder` | Delete file folder |
+| **Audiences** | |
 | `mc_createAudience` | Create new audience |
 | `mc_updateAudience` | Update audience settings |
+| `mc_deleteAudience` | Delete audience |
+| **Members** | |
+| `mc_createMember` | Add member to audience |
+| `mc_updateMember` | Update member information |
+| `mc_deleteMember` | Delete member from audience |
+| **Segments** | |
 | `mc_createSegment` | Create segment |
-| `mc_addTagToMember` | Add/remove tags |
+| `mc_updateSegment` | Update segment |
+| `mc_deleteSegment` | Delete segment |
+| **Tags** | |
+| `mc_createTag` | Create tag |
+| `mc_addTagToMember` | Add/remove tags from member |
+| `mc_deleteTag` | Delete tag |
+| **Merge Fields** | |
 | `mc_createMergeField` | Create merge field |
+| `mc_updateMergeField` | Update merge field |
+| `mc_deleteMergeField` | Delete merge field |
+| **Domains** | |
+| `mc_createVerifiedDomain` | Add domain for verification |
+| `mc_deleteVerifiedDomain` | Delete verified domain |
+| `mc_sendDomainVerificationEmail` | Send domain verification email |
 
 ## Example Queries
 

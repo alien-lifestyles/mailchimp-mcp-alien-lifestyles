@@ -37,16 +37,20 @@ function calculateBackoff(attempt: number, config: RetryConfig): number {
 /**
  * Sanitize error data to prevent information disclosure
  * Only includes safe error fields that don't expose sensitive API details
+ * For 400 errors, include validation details to help debug
  */
-function sanitizeError(errorData: unknown): string {
+function sanitizeError(errorData: unknown, statusCode?: number): string {
   if (!errorData || typeof errorData !== 'object') {
     return 'Unknown error';
   }
 
   const obj = errorData as Record<string, unknown>;
   
-  // Only include safe error fields
-  const safeFields = ['detail', 'title', 'status'];
+  // For 400 errors, include more validation details
+  const safeFields = statusCode === 400 
+    ? ['detail', 'title', 'status', 'errors', 'instance', 'type']
+    : ['detail', 'title', 'status'];
+  
   const sanitized: Record<string, unknown> = {};
   
   for (const field of safeFields) {
@@ -60,7 +64,7 @@ function sanitizeError(errorData: unknown): string {
     return 'API request failed';
   }
 
-  return JSON.stringify(sanitized);
+  return JSON.stringify(sanitized, null, 2);
 }
 
 export class MailchimpClient {
@@ -127,8 +131,9 @@ export class MailchimpClient {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
+          const errorMessage = sanitizeError(errorData, response.status);
           throw new Error(
-            `API error ${response.status}: ${sanitizeError(errorData)}`
+            `API error ${response.status}: ${errorMessage}`
           );
         }
 

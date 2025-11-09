@@ -482,6 +482,404 @@ export function createWriteTools(
         required: ['audienceId', 'name', 'type', 'tag'],
       },
     },
+    {
+      name: 'mc_updateCampaign',
+      description: 'Update campaign settings',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          campaignId: {
+            type: 'string',
+            description: 'The unique ID for the campaign',
+          },
+          settings: {
+            type: 'object',
+            description: 'Campaign settings to update',
+            properties: {
+              subject_line: {
+                type: 'string',
+                description: 'The subject line for the campaign',
+              },
+              from_name: {
+                type: 'string',
+                description: 'The \'from\' name for the campaign',
+              },
+              reply_to: {
+                type: 'string',
+                description: 'The reply-to email address for the campaign',
+              },
+              title: {
+                type: 'string',
+                description: 'The title of the campaign',
+              },
+            },
+          },
+        },
+        required: ['campaignId'],
+      },
+    },
+    {
+      name: 'mc_deleteCampaign',
+      description: 'Delete a campaign',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          campaignId: {
+            type: 'string',
+            description: 'The unique ID for the campaign to delete',
+          },
+        },
+        required: ['campaignId'],
+      },
+    },
+    {
+      name: 'mc_createMember',
+      description: 'Add a member to an audience',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          email_address: {
+            type: 'string',
+            description: 'The member\'s email address',
+          },
+          status: {
+            type: 'string',
+            enum: ['subscribed', 'unsubscribed', 'cleaned', 'pending', 'transactional'],
+            description: 'Subscription status for the member',
+          },
+          merge_fields: {
+            type: 'object',
+            description: 'Merge fields for the member',
+          },
+          tags: {
+            type: 'array',
+            description: 'Tags to apply to the member',
+            items: {
+              type: 'string',
+            },
+          },
+        },
+        required: ['audienceId', 'email_address', 'status'],
+      },
+    },
+    {
+      name: 'mc_updateMember',
+      description: 'Update member information',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          email: {
+            type: 'string',
+            description: 'The member\'s email address',
+          },
+          email_address: {
+            type: 'string',
+            description: 'New email address (if changing)',
+          },
+          status: {
+            type: 'string',
+            enum: ['subscribed', 'unsubscribed', 'cleaned', 'pending', 'transactional'],
+            description: 'Subscription status',
+          },
+          merge_fields: {
+            type: 'object',
+            description: 'Merge fields to update',
+          },
+        },
+        required: ['audienceId', 'email'],
+      },
+    },
+    {
+      name: 'mc_deleteMember',
+      description: 'Delete a member from an audience',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          email: {
+            type: 'string',
+            description: 'The member\'s email address',
+          },
+        },
+        required: ['audienceId', 'email'],
+      },
+    },
+    {
+      name: 'mc_deleteAudience',
+      description: 'Delete an audience',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience to delete',
+          },
+        },
+        required: ['audienceId'],
+      },
+    },
+    {
+      name: 'mc_updateSegment',
+      description: 'Update a segment',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          segmentId: {
+            type: 'string',
+            description: 'The unique ID for the segment',
+          },
+          name: {
+            type: 'string',
+            description: 'New name for the segment',
+          },
+          conditions: {
+            type: 'array',
+            description: 'Updated conditions for saved segments',
+            items: {
+              type: 'object',
+              properties: {
+                field: {
+                  type: 'string',
+                },
+                op: {
+                  type: 'string',
+                },
+                value: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+        required: ['audienceId', 'segmentId'],
+      },
+    },
+    {
+      name: 'mc_deleteSegment',
+      description: 'Delete a segment',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          segmentId: {
+            type: 'string',
+            description: 'The unique ID for the segment to delete',
+          },
+        },
+        required: ['audienceId', 'segmentId'],
+      },
+    },
+    {
+      name: 'mc_createTag',
+      description: 'Create a tag',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          name: {
+            type: 'string',
+            description: 'The name of the tag',
+          },
+        },
+        required: ['audienceId', 'name'],
+      },
+    },
+    {
+      name: 'mc_deleteTag',
+      description: 'Delete a tag',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          tagId: {
+            type: 'string',
+            description: 'The unique ID for the tag to delete',
+          },
+        },
+        required: ['audienceId', 'tagId'],
+      },
+    },
+    {
+      name: 'mc_updateMergeField',
+      description: 'Update a merge field',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          mergeFieldId: {
+            type: 'string',
+            description: 'The unique ID for the merge field',
+          },
+          name: {
+            type: 'string',
+            description: 'New name for the merge field',
+          },
+          required: {
+            type: 'boolean',
+            description: 'Whether this field is required',
+          },
+          public: {
+            type: 'boolean',
+            description: 'Whether this field is visible to members',
+          },
+          default_value: {
+            type: 'string',
+            description: 'Default value for the field',
+          },
+          options: {
+            type: 'object',
+            description: 'Options for dropdown, radio, or other field types',
+            properties: {
+              choices: {
+                type: 'array',
+                description: 'Array of choice strings',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+        required: ['audienceId', 'mergeFieldId'],
+      },
+    },
+    {
+      name: 'mc_deleteMergeField',
+      description: 'Delete a merge field',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          audienceId: {
+            type: 'string',
+            description: 'The unique ID for the audience (list)',
+          },
+          mergeFieldId: {
+            type: 'string',
+            description: 'The unique ID for the merge field to delete',
+          },
+        },
+        required: ['audienceId', 'mergeFieldId'],
+      },
+    },
+    {
+      name: 'mc_deleteFile',
+      description: 'Delete a file from File Manager',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fileId: {
+            type: 'string',
+            description: 'The unique ID for the file to delete',
+          },
+        },
+        required: ['fileId'],
+      },
+    },
+    {
+      name: 'mc_deleteTemplateFolder',
+      description: 'Delete a template folder',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          folderId: {
+            type: 'string',
+            description: 'The unique ID for the template folder to delete',
+          },
+        },
+        required: ['folderId'],
+      },
+    },
+    {
+      name: 'mc_deleteFileFolder',
+      description: 'Delete a file folder',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          folderId: {
+            type: 'string',
+            description: 'The unique ID for the file folder to delete',
+          },
+        },
+        required: ['folderId'],
+      },
+    },
+    {
+      name: 'mc_createVerifiedDomain',
+      description: 'Add a domain for verification',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'The domain name to verify (e.g., example.com). Can also be an email address (e.g., user@example.com) - the domain will be extracted automatically.',
+          },
+          verification_email: {
+            type: 'string',
+            description: 'Email address to send verification to (required by Mailchimp API). If not provided and domain is an email, will use the email address.',
+          },
+        },
+        required: ['domain'],
+      },
+    },
+    {
+      name: 'mc_deleteVerifiedDomain',
+      description: 'Delete a verified domain. Use the exact domain name as returned by mc_listVerifiedDomains or mc_getVerifiedDomain.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domainName: {
+            type: 'string',
+            description: 'The exact domain name to delete (use domain from mc_listVerifiedDomains for exact format)',
+          },
+        },
+        required: ['domainName'],
+      },
+    },
+    {
+      name: 'mc_sendDomainVerificationEmail',
+      description: 'Send domain verification email',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domainName: {
+            type: 'string',
+            description: 'The domain name to verify (e.g., example.com)',
+          },
+          email: {
+            type: 'string',
+            description: 'Email address to send verification to',
+          },
+        },
+        required: ['domainName', 'email'],
+      },
+    },
   ];
 }
 
@@ -882,6 +1280,409 @@ export async function handleWriteTool(
       }
       
       return await client.post(`/lists/${params.audienceId}/merge-fields`, body);
+    }
+
+    case 'mc_updateCampaign': {
+      const schema = z.object({
+        campaignId: mailchimpIdSchema,
+        settings: z.object({
+          subject_line: z.string().optional(),
+          from_name: z.string().optional(),
+          reply_to: z.string().email().max(254).optional(),
+          title: z.string().optional(),
+        }).optional(),
+      });
+      const params = schema.parse(args);
+      
+      if (!params.settings) {
+        throw new Error('Settings must be provided to update campaign');
+      }
+      
+      return await client.patch(`/campaigns/${params.campaignId}`, {
+        settings: params.settings,
+      });
+    }
+
+    case 'mc_deleteCampaign': {
+      const schema = z.object({
+        campaignId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/campaigns/${params.campaignId}`);
+    }
+
+    case 'mc_createMember': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        email_address: z.string().email().max(254),
+        status: z.enum(['subscribed', 'unsubscribed', 'cleaned', 'pending', 'transactional']),
+        merge_fields: z.record(z.unknown()).optional(),
+        tags: z.array(z.string()).optional(),
+      });
+      const params = schema.parse(args);
+      
+      const body: {
+        email_address: string;
+        status: string;
+        merge_fields?: Record<string, unknown>;
+        tags?: string[];
+      } = {
+        email_address: params.email_address,
+        status: params.status,
+      };
+      
+      if (params.merge_fields) {
+        body.merge_fields = params.merge_fields;
+      }
+      if (params.tags) {
+        body.tags = params.tags;
+      }
+      
+      // Calculate subscriber hash (MD5 of lowercase email)
+      const emailHash = createHash('md5').update(params.email_address.toLowerCase()).digest('hex');
+      return await client.put(`/lists/${params.audienceId}/members/${emailHash}`, body);
+    }
+
+    case 'mc_updateMember': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        email: z.string().email().max(254),
+        email_address: z.string().email().max(254).optional(),
+        status: z.enum(['subscribed', 'unsubscribed', 'cleaned', 'pending', 'transactional']).optional(),
+        merge_fields: z.record(z.unknown()).optional(),
+      });
+      const params = schema.parse(args);
+      
+      // Calculate subscriber hash (MD5 of lowercase email)
+      const emailHash = createHash('md5').update(params.email.toLowerCase()).digest('hex');
+      
+      const body: {
+        email_address?: string;
+        status?: string;
+        merge_fields?: Record<string, unknown>;
+      } = {};
+      
+      if (params.email_address) {
+        body.email_address = params.email_address;
+      }
+      if (params.status) {
+        body.status = params.status;
+      }
+      if (params.merge_fields) {
+        body.merge_fields = params.merge_fields;
+      }
+      
+      if (Object.keys(body).length === 0) {
+        throw new Error('At least one field must be provided to update (email_address, status, or merge_fields)');
+      }
+      
+      return await client.patch(`/lists/${params.audienceId}/members/${emailHash}`, body);
+    }
+
+    case 'mc_deleteMember': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        email: z.string().email().max(254),
+      });
+      const params = schema.parse(args);
+      
+      // Calculate subscriber hash (MD5 of lowercase email)
+      const emailHash = createHash('md5').update(params.email.toLowerCase()).digest('hex');
+      return await client.delete(`/lists/${params.audienceId}/members/${emailHash}`);
+    }
+
+    case 'mc_deleteAudience': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/lists/${params.audienceId}`);
+    }
+
+    case 'mc_updateSegment': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        segmentId: mailchimpIdSchema,
+        name: z.string().min(1).max(100).optional(),
+        conditions: z.array(z.object({
+          field: z.string(),
+          op: z.string(),
+          value: z.union([z.string(), z.number()]),
+        })).optional(),
+      });
+      const params = schema.parse(args);
+      
+      if (!params.name && !params.conditions) {
+        throw new Error('Either name or conditions must be provided');
+      }
+      
+      const body: {
+        name?: string;
+        conditions?: Array<{ field: string; op: string; value: string | number }>;
+      } = {};
+      
+      if (params.name) {
+        body.name = params.name;
+      }
+      if (params.conditions) {
+        body.conditions = params.conditions;
+      }
+      
+      return await client.patch(`/lists/${params.audienceId}/segments/${params.segmentId}`, body);
+    }
+
+    case 'mc_deleteSegment': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        segmentId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/lists/${params.audienceId}/segments/${params.segmentId}`);
+    }
+
+    case 'mc_createTag': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        name: z.string().min(1).max(100),
+      });
+      const params = schema.parse(args);
+      return await client.post(`/lists/${params.audienceId}/segments`, {
+        name: params.name,
+        static_segment: [],
+      });
+    }
+
+    case 'mc_deleteTag': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        tagId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/lists/${params.audienceId}/segments/${params.tagId}`);
+    }
+
+    case 'mc_updateMergeField': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        mergeFieldId: mailchimpIdSchema,
+        name: z.string().min(1).max(100).optional(),
+        required: z.boolean().optional(),
+        public: z.boolean().optional(),
+        default_value: z.string().optional(),
+        options: z.object({
+          choices: z.array(z.string()).optional(),
+        }).optional(),
+      });
+      const params = schema.parse(args);
+      
+      if (!params.name && params.required === undefined && params.public === undefined && 
+          !params.default_value && !params.options) {
+        throw new Error('At least one field must be provided to update');
+      }
+      
+      const body: {
+        name?: string;
+        required?: boolean;
+        public?: boolean;
+        default_value?: string;
+        options?: { choices?: string[] };
+      } = {};
+      
+      if (params.name) {
+        body.name = params.name;
+      }
+      if (params.required !== undefined) {
+        body.required = params.required;
+      }
+      if (params.public !== undefined) {
+        body.public = params.public;
+      }
+      if (params.default_value !== undefined) {
+        body.default_value = params.default_value;
+      }
+      if (params.options) {
+        body.options = params.options;
+      }
+      
+      return await client.patch(`/lists/${params.audienceId}/merge-fields/${params.mergeFieldId}`, body);
+    }
+
+    case 'mc_deleteMergeField': {
+      const schema = z.object({
+        audienceId: mailchimpIdSchema,
+        mergeFieldId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/lists/${params.audienceId}/merge-fields/${params.mergeFieldId}`);
+    }
+
+    case 'mc_deleteFile': {
+      const schema = z.object({
+        fileId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/file-manager/files/${params.fileId}`);
+    }
+
+    case 'mc_deleteTemplateFolder': {
+      const schema = z.object({
+        folderId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/template-folders/${params.folderId}`);
+    }
+
+    case 'mc_deleteFileFolder': {
+      const schema = z.object({
+        folderId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      return await client.delete(`/file-manager/folders/${params.folderId}`);
+    }
+
+    case 'mc_createVerifiedDomain': {
+      const schema = z.object({
+        domain: z.string().min(1).max(255),
+        verification_email: z.string().email().max(254).optional(),
+      });
+      const params = schema.parse(args);
+      
+      // Extract domain from email if provided (e.g., "user@example.com" -> "example.com")
+      let inputDomain = params.domain.trim();
+      let verificationEmail = params.verification_email;
+      
+      // If input looks like an email, extract domain and use email as verification_email
+      if (inputDomain.includes('@')) {
+        const emailParts = inputDomain.split('@');
+        if (emailParts.length === 2) {
+          verificationEmail = verificationEmail || inputDomain; // Use the email as verification_email if not provided
+          inputDomain = emailParts[1]; // Extract domain part
+        }
+      }
+      
+      // Clean up domain: remove protocol, www, paths, query strings
+      let domain = inputDomain;
+      domain = domain.replace(/^https?:\/\//i, '');
+      domain = domain.replace(/^www\./i, '');
+      domain = domain.split('/')[0];
+      domain = domain.split('?')[0];
+      domain = domain.split('#')[0];
+      
+      // Validate domain format
+      const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+      if (!domainRegex.test(domain)) {
+        throw new Error(`Invalid domain format: ${domain}. Domain must be a valid domain name (e.g., example.com)`);
+      }
+      
+      // Mailchimp API: POST /verified-domains with body { domain: "example.com", verification_email: "user@example.com" }
+      // The verification_email parameter is required by the API
+      if (!verificationEmail) {
+        throw new Error(
+          `verification_email is required. ` +
+          `Please provide an email address for domain verification (e.g., admin@${domain}). ` +
+          `You can either pass it as the verification_email parameter, or provide an email address as the domain parameter.`
+        );
+      }
+      
+      // Validate verification email format
+      if (!z.string().email().safeParse(verificationEmail).success) {
+        throw new Error(`Invalid verification_email format: ${verificationEmail}. Must be a valid email address.`);
+      }
+      
+      try {
+        // Try with verification_email first (most likely field name)
+        return await client.post('/verified-domains', {
+          domain: domain,
+          verification_email: verificationEmail,
+        });
+      } catch (error) {
+        // If verification_email doesn't work, try with 'email' field name
+        if (error instanceof Error && error.message.includes('400')) {
+          try {
+            return await client.post('/verified-domains', {
+              domain: domain,
+              email: verificationEmail,
+            });
+          } catch (error2) {
+            // Both field names failed, show the actual error
+            throw new Error(
+              `Domain creation failed. ` +
+              `Mailchimp API error: ${error2 instanceof Error ? error2.message : String(error2)}. ` +
+              `Request sent: domain="${domain}", verification_email="${verificationEmail}". ` +
+              `Common issues: domain already exists, invalid format, incorrect field name, or account restrictions. ` +
+              `Try checking if the domain already exists with mc_listVerifiedDomains.`
+            );
+          }
+        }
+        throw error;
+      }
+    }
+
+    case 'mc_deleteVerifiedDomain': {
+      const schema = z.object({
+        domainName: z.string().min(1).max(255),
+      });
+      const params = schema.parse(args);
+      
+      // Clean up domain: remove protocol, www, paths, query strings
+      let domain = params.domainName.trim();
+      domain = domain.replace(/^https?:\/\//i, '');
+      domain = domain.replace(/^www\./i, '');
+      domain = domain.split('/')[0];
+      domain = domain.split('?')[0];
+      domain = domain.split('#')[0];
+      
+      // According to Mailchimp API docs: DELETE /verified-domains/{domain_name}
+      // The domain should be URL encoded in the path
+      // However, some APIs are picky - try both encoded and unencoded
+      const encodedDomain = encodeURIComponent(domain);
+      
+      try {
+        // Try with URL encoding first (standard approach)
+        return await client.delete(`/verified-domains/${encodedDomain}`);
+      } catch (error) {
+        // If 404 with encoding, try without encoding (some APIs don't like it)
+        if (error instanceof Error && error.message.includes('404')) {
+          try {
+            return await client.delete(`/verified-domains/${domain}`);
+          } catch (error2) {
+            // If still 404, provide helpful error message
+            throw new Error(
+              `Domain not found or cannot be deleted. ` +
+              `Ensure the domain name matches exactly as returned by mc_listVerifiedDomains. ` +
+              `Domain attempted: ${domain}. ` +
+              `The domain must exist and be in a deletable state.`
+            );
+          }
+        }
+        throw error;
+      }
+    }
+
+    case 'mc_sendDomainVerificationEmail': {
+      const schema = z.object({
+        domainName: z.string().min(1).max(255).regex(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i, {
+          message: 'Invalid domain name format',
+        }),
+        email: z.string().email().max(254).optional(),
+      });
+      const params = schema.parse(args);
+      
+      // Clean up domain: remove protocol, www, paths, query strings
+      let domain = params.domainName.trim();
+      domain = domain.replace(/^https?:\/\//i, '');
+      domain = domain.replace(/^www\./i, '');
+      domain = domain.split('/')[0];
+      domain = domain.split('?')[0];
+      domain = domain.split('#')[0];
+      
+      // Mailchimp API: POST /verified-domains/{domain_name}/actions/verify
+      // According to docs, this endpoint may not require a body, or may require different structure
+      const encodedDomain = encodeURIComponent(domain);
+      
+      // Try with email in body if provided, otherwise empty body
+      const body = params.email ? { code: params.email } : {};
+      return await client.post(`/verified-domains/${encodedDomain}/actions/verify`, body);
     }
 
     default:
