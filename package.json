@@ -10,7 +10,11 @@
     "start": "node dist/index.js",
     "setup": "tsx src/setup/server.ts",
     "postinstall": "npm run build",
-    "build:installer": "./scripts/build-installer.sh"
+    "build:installer": "./scripts/build-installer.sh",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=verbose"
   },
   "bin": {
     "mailchimp-mcp-setup": "./scripts/setup-cli.js",
@@ -43,16 +47,21 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "dotenv": "^16.4.5",
-    "zod": "^3.23.8",
     "express": "^5.1.0",
-    "open": "^10.2.0"
+    "open": "^10.2.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/node": "^20.14.12",
+    "@vitest/coverage-v8": "^4.0.8",
+    "@vitest/ui": "^4.0.8",
+    "pino": "^10.1.0",
+    "pino-pretty": "^13.1.2",
     "tsup": "^8.2.3",
     "tsx": "^4.16.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^4.0.8"
   },
   "engines": {
     "node": ">=20.0.0"
