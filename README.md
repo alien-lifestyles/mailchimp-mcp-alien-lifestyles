@@ -148,6 +148,8 @@ MAILCHIMP_READONLY=true
 | `mc_createVerifiedDomain` | Add domain for verification |
 | `mc_deleteVerifiedDomain` | Delete verified domain |
 | `mc_sendDomainVerificationEmail` | Send domain verification email |
+| **E-commerce Stores** | |
+| `mc_deleteStore` | Delete e-commerce store (Note: Mailchimp Stores API is read-only - stores must be deleted via web interface) |
 
 ## Example Queries
 

@@ -880,6 +880,20 @@ export function createWriteTools(
         required: ['domainName', 'email'],
       },
     },
+    {
+      name: 'mc_deleteStore',
+      description: 'Delete an e-commerce store',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          storeId: {
+            type: 'string',
+            description: 'The unique ID for the store to delete',
+          },
+        },
+        required: ['storeId'],
+      },
+    },
   ];
 }
 
@@ -1683,6 +1697,26 @@ export async function handleWriteTool(
       // Try with email in body if provided, otherwise empty body
       const body = params.email ? { code: params.email } : {};
       return await client.post(`/verified-domains/${encodedDomain}/actions/verify`, body);
+    }
+
+    case 'mc_deleteStore': {
+      const schema = z.object({
+        storeId: mailchimpIdSchema,
+      });
+      const params = schema.parse(args);
+      
+      // Mailchimp Stores API is read-only as of August 19, 2021
+      // Stores cannot be deleted via API - they must be deleted through the web interface
+      // or by disconnecting the integration platform
+      throw new Error(
+        'Mailchimp Stores API is read-only. E-commerce stores cannot be deleted via the API. ' +
+        'To delete a store, you must:\n' +
+        '1. Go to your Mailchimp dashboard\n' +
+        '2. Navigate to Integrations or E-commerce section\n' +
+        '3. Find the store and disconnect/delete it from there\n\n' +
+        'Alternatively, disconnect the store from your e-commerce platform (WooCommerce, Shopify, etc.) ' +
+        'and it will be automatically removed from Mailchimp.'
+      );
     }
 
     default:
