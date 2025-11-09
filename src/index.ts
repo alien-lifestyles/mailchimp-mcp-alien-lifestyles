@@ -6,12 +6,15 @@ import {
   ListToolsRequestSchema,
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { MailchimpClient } from './lib/mailchimp-client.js';
 import { createReadTools, handleReadTool } from './tools/read-tools.js';
 import { createWriteTools, handleWriteTool } from './tools/write-tools.js';
 import { createMailchimpPrompts, getPromptTemplate } from './prompts/mailchimp-prompts.js';
 import { getLicenseType, validateLicense, LicenseType, isWriteEnabled } from './lib/license.js';
+import { listResources, readResource } from './resources/mailchimp-resources.js';
 
 const API_KEY = process.env.MAILCHIMP_API_KEY;
 // Validate server prefix to prevent SSRF
@@ -31,16 +34,7 @@ const READONLY_ENV = process.env.MAILCHIMP_READONLY;
 const READONLY_FROM_ENV = READONLY_ENV !== undefined && READONLY_ENV !== 'false';
 const WRITE_ENABLED = isWriteEnabled() && !READONLY_FROM_ENV;
 
-const CONFIRM_SEND = process.env.CONFIRM_SEND || '';
-const TRANSPORT_MODE = process.env.TRANSPORT_MODE || 'stdio';
 const MASK_PII = process.env.MAILCHIMP_MASK_PII === 'true';
-
-// Image generation API keys (optional)
-const IMAGE_GEN_API_KEYS = {
-  openai: process.env.OPENAI_API_KEY,
-  stability: process.env.STABILITY_API_KEY,
-  replicate: process.env.REPLICATE_API_KEY,
-};
 
 if (!API_KEY) {
   console.error('❌ MAILCHIMP_API_KEY environment variable is required');
@@ -58,12 +52,13 @@ const server = new Server(
     capabilities: {
       tools: {},
       prompts: {},
+      resources: {},
     },
   }
 );
 
 const readTools = createReadTools(client);
-const writeTools = WRITE_ENABLED ? createWriteTools(client, IMAGE_GEN_API_KEYS) : [];
+const writeTools = WRITE_ENABLED ? createWriteTools(client) : [];
 const allTools = [...readTools, ...writeTools];
 const prompts = createMailchimpPrompts(LICENSE_TYPE);
 
@@ -102,6 +97,22 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   };
 });
 
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  const resources = await listResources(client);
+  return { resources };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  const content = await readResource(request.params.uri, client);
+  return {
+    contents: [{
+      uri: request.params.uri,
+      mimeType: 'application/json',
+      text: content,
+    }],
+  };
+});
+
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
@@ -122,7 +133,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     const isWriteTool = writeTools.some(tool => tool.name === name);
     if (isWriteTool) {
-      const result = await handleWriteTool(name, args, client, CONFIRM_SEND, IMAGE_GEN_API_KEYS);
+      const result = await handleWriteTool(name, args, client);
       return {
         content: [
           {
@@ -156,16 +167,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function main() {
-  if (TRANSPORT_MODE !== 'stdio') {
-    console.error(`❌ Invalid TRANSPORT_MODE: ${TRANSPORT_MODE}. Only 'stdio' mode is supported.`);
-    process.exit(1);
-  }
-  
   // Log license status
   if (LICENSE_TYPE === LicenseType.PAID) {
     console.error(`✅ Mailchimp MCP server running via stdio. License: PAID (Full access)`);
   } else {
-    console.error(`✅ Mailchimp MCP server running via stdio. License: FREE (Read-only, 5 prompts)`);
+    console.error(`✅ Mailchimp MCP server running via stdio. License: FREE (Read-only, 3 prompts)`);
     if (LICENSE_KEY) {
       console.error(`⚠️  Invalid license key format. Using FREE license.`);
     }

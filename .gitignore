@@ -26,10 +26,8 @@ Thumbs.db
 logs/
 
 # Backup files
-*.bak
-*.bak2
-*.bak3
-src/**/*.bak*
+*.bak*
+*.backup*
 
 # Temporary files
 tmp/

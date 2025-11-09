@@ -61,9 +61,6 @@ async function loadConfig() {
     }
     
     document.getElementById('maskPii').checked = config.maskPii !== false;
-    document.getElementById('openaiApiKey').value = config.openaiApiKey || '';
-    document.getElementById('stabilityApiKey').value = config.stabilityApiKey || '';
-    document.getElementById('replicateApiKey').value = config.replicateApiKey || '';
   } catch (error) {
     showStatus('Error loading configuration: ' + error.message, 'error');
   }
@@ -108,7 +105,6 @@ function showConfirmationModal(formData) {
           <li>Write capabilities: Create/update audiences, segments, tags, merge fields</li>
           <li>Template creation and management</li>
           <li>File upload and management</li>
-          <li>AI image generation and upload</li>
           <li>Campaign creation and sending</li>
         </ul>
       </div>
@@ -132,7 +128,6 @@ function showConfirmationModal(formData) {
           <li>No write capabilities</li>
           <li>No template creation</li>
           <li>No file management</li>
-          <li>No AI image generation</li>
           <li>No campaign creation</li>
         </ul>
       </div>
@@ -271,9 +266,6 @@ async function saveConfig(event) {
     mailchimpServerPrefix: document.getElementById('mailchimpServerPrefix').value.trim(),
     licenseKey: licenseKeyValue,
     maskPii: document.getElementById('maskPii').checked,
-    openaiApiKey: document.getElementById('openaiApiKey').value.trim(),
-    stabilityApiKey: document.getElementById('stabilityApiKey').value.trim(),
-    replicateApiKey: document.getElementById('replicateApiKey').value.trim(),
   };
 
   // Validate required fields

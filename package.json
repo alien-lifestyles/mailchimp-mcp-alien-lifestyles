@@ -6,10 +6,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm --dts --out-dir dist --clean",
-    "start": "node dist/index.js",
-    "setup": "tsx src/setup/server.ts",
-    "prepublishOnly": "npm run build"
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "start": "node dist/index.js"
   },
   "keywords": [
     "mcp",

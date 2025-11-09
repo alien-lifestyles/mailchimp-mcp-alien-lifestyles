@@ -15,7 +15,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
   return [
     {
       name: 'mc_ping',
-      description: 'Test connection to Mailchimp MCP server. Returns { ok: true }.',
+      description: 'Test connection to Mailchimp MCP server',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -23,7 +23,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listAudiences',
-      description: 'List all Mailchimp audiences (lists). Returns audience IDs, names, member counts, and creation dates. Use this to find audience IDs before querying members.',
+      description: 'List Mailchimp audiences with member counts',
       inputSchema: {
         type: 'object',
         properties: {
@@ -40,7 +40,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getAudience',
-      description: 'Get detailed information about a specific audience/list including member count, stats, and settings. Requires audienceId.',
+      description: 'Get audience details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -54,7 +54,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listMembers',
-      description: 'List members in an audience. Useful for browsing subscribers, checking member status, and finding email addresses. Supports filtering by status.',
+      description: 'List members in an audience',
       inputSchema: {
         type: 'object',
         properties: {
@@ -81,7 +81,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getMember',
-      description: 'Get detailed information about a specific member in an audience by email address. Returns subscription status, signup date, location, and merge fields.',
+      description: 'Get member details by email',
       inputSchema: {
         type: 'object',
         properties: {
@@ -99,7 +99,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listCampaigns',
-      description: 'List Mailchimp campaigns with optional filters. Returns campaign details including subject, status, send time, and recipient counts. Use status filter to find sent, scheduled, or draft campaigns.',
+      description: 'List Mailchimp campaigns',
       inputSchema: {
         type: 'object',
         properties: {
@@ -125,7 +125,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getCampaign',
-      description: 'Get detailed information about a specific campaign including settings, recipients, send time, and tracking options.',
+      description: 'Get campaign details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -139,7 +139,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getCampaignContent',
-      description: 'Get the HTML and plain text content for a specific campaign. Returns both html and plain_text fields.',
+      description: 'Get campaign content',
       inputSchema: {
         type: 'object',
         properties: {
@@ -153,7 +153,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getCampaignReport',
-      description: 'Get analytics report for a sent campaign including opens, clicks, bounces, unsubscribes, and engagement statistics.',
+      description: 'Get campaign analytics report',
       inputSchema: {
         type: 'object',
         properties: {
@@ -167,7 +167,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getAccount',
-      description: 'Get account information including account name, username, email, and timezone.',
+      description: 'Get account information',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -175,7 +175,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listSegments',
-      description: 'List segments for an audience. Segments allow you to filter and organize your audience members. Supports static and saved segments.',
+      description: 'List segments for audience',
       inputSchema: {
         type: 'object',
         properties: {
@@ -202,7 +202,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getSegment',
-      description: 'Get detailed information about a specific segment including member count and segment conditions.',
+      description: 'Get segment details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -220,7 +220,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listSegmentMembers',
-      description: 'List members in a specific segment. Useful for viewing which members match segment criteria.',
+      description: 'List members in segment',
       inputSchema: {
         type: 'object',
         properties: {
@@ -246,7 +246,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listTags',
-      description: 'List tags for an audience. Tags are used to organize and segment members.',
+      description: 'List tags for audience',
       inputSchema: {
         type: 'object',
         properties: {
@@ -268,7 +268,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getTag',
-      description: 'Get information about a specific tag including member count.',
+      description: 'Get tag information',
       inputSchema: {
         type: 'object',
         properties: {
@@ -286,7 +286,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listMergeFields',
-      description: 'List merge fields for an audience. Merge fields are custom fields that store additional member data.',
+      description: 'List merge fields for audience',
       inputSchema: {
         type: 'object',
         properties: {
@@ -313,7 +313,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getMergeField',
-      description: 'Get detailed information about a specific merge field including field type, options, and default value.',
+      description: 'Get merge field details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -331,7 +331,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listInterestCategories',
-      description: 'List interest categories for an audience. Interest categories organize interests into groups.',
+      description: 'List interest categories',
       inputSchema: {
         type: 'object',
         properties: {
@@ -353,7 +353,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getInterestCategory',
-      description: 'Get detailed information about a specific interest category.',
+      description: 'Get interest category details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -371,7 +371,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listInterests',
-      description: 'List interests within an interest category. Interests are sub-segments within categories.',
+      description: 'List interests in category',
       inputSchema: {
         type: 'object',
         properties: {
@@ -397,7 +397,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getInterest',
-      description: 'Get detailed information about a specific interest including member count.',
+      description: 'Get interest details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -419,7 +419,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listTemplates',
-      description: 'List email templates. Templates are reusable email designs for campaigns.',
+      description: 'List email templates',
       inputSchema: {
         type: 'object',
         properties: {
@@ -441,7 +441,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getTemplate',
-      description: 'Get detailed information about a specific template including HTML content and thumbnail.',
+      description: 'Get template details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -455,7 +455,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listTemplateFolders',
-      description: 'List template folders. Folders help organize templates.',
+      description: 'List template folders',
       inputSchema: {
         type: 'object',
         properties: {
@@ -472,7 +472,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getTemplateFolder',
-      description: 'Get detailed information about a specific template folder.',
+      description: 'Get template folder details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -486,7 +486,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listAutomations',
-      description: 'List automation workflows. Automations are triggered email sequences.',
+      description: 'List automation workflows',
       inputSchema: {
         type: 'object',
         properties: {
@@ -503,7 +503,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getAutomation',
-      description: 'Get detailed information about a specific automation workflow including status and settings.',
+      description: 'Get automation workflow details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -517,7 +517,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listAutomationEmails',
-      description: 'List emails in an automation workflow. Returns all emails in the automation sequence.',
+      description: 'List emails in automation workflow',
       inputSchema: {
         type: 'object',
         properties: {
@@ -531,7 +531,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getAutomationEmail',
-      description: 'Get detailed information about a specific email in an automation workflow.',
+      description: 'Get automation email details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -549,7 +549,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listReports',
-      description: 'List all campaign reports. Returns a summary of all sent campaigns with basic statistics.',
+      description: 'List campaign reports',
       inputSchema: {
         type: 'object',
         properties: {
@@ -574,7 +574,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listBatchOperations',
-      description: 'List batch operations. Batch operations are asynchronous bulk operations like bulk member updates.',
+      description: 'List batch operations',
       inputSchema: {
         type: 'object',
         properties: {
@@ -591,7 +591,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getBatchOperation',
-      description: 'Get detailed information about a specific batch operation including status, progress, and results.',
+      description: 'Get batch operation details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -605,7 +605,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listConversations',
-      description: 'List conversations. Conversations are email threads between your audience and your brand.',
+      description: 'List conversations',
       inputSchema: {
         type: 'object',
         properties: {
@@ -630,7 +630,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getConversation',
-      description: 'Get detailed information about a specific conversation including all messages.',
+      description: 'Get conversation details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -644,7 +644,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listConversationMessages',
-      description: 'List messages in a conversation. Returns all messages in the conversation thread.',
+      description: 'List messages in conversation',
       inputSchema: {
         type: 'object',
         properties: {
@@ -666,7 +666,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listAudienceActivity',
-      description: 'List activity feed for an audience. Returns recent activity including subscribes, unsubscribes, and profile updates.',
+      description: 'List activity feed for audience',
       inputSchema: {
         type: 'object',
         properties: {
@@ -688,7 +688,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listStores',
-      description: 'List e-commerce stores connected to your Mailchimp account.',
+      description: 'List e-commerce stores',
       inputSchema: {
         type: 'object',
         properties: {
@@ -705,7 +705,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getStore',
-      description: 'Get detailed information about a specific e-commerce store.',
+      description: 'Get e-commerce store details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -719,7 +719,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listStoreProducts',
-      description: 'List products in an e-commerce store.',
+      description: 'List products in store',
       inputSchema: {
         type: 'object',
         properties: {
@@ -741,7 +741,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getStoreProduct',
-      description: 'Get detailed information about a specific product in a store.',
+      description: 'Get product details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -759,7 +759,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listStoreOrders',
-      description: 'List orders from an e-commerce store.',
+      description: 'List orders from store',
       inputSchema: {
         type: 'object',
         properties: {
@@ -785,7 +785,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getStoreOrder',
-      description: 'Get detailed information about a specific order including line items and customer details.',
+      description: 'Get order details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -803,7 +803,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listStoreCustomers',
-      description: 'List customers from an e-commerce store.',
+      description: 'List customers from store',
       inputSchema: {
         type: 'object',
         properties: {
@@ -825,7 +825,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getStoreCustomer',
-      description: 'Get detailed information about a specific customer including order history.',
+      description: 'Get customer details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -843,7 +843,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listFiles',
-      description: 'List files in Mailchimp\'s File Manager. Files include images, PDFs, and other assets used in campaigns.',
+      description: 'List files in File Manager',
       inputSchema: {
         type: 'object',
         properties: {
@@ -865,7 +865,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getFile',
-      description: 'Get detailed information about a specific file including URL, size, and creation date.',
+      description: 'Get file details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -879,7 +879,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listFileFolders',
-      description: 'List folders in Mailchimp\'s File Manager. Folders help organize files.',
+      description: 'List folders in File Manager',
       inputSchema: {
         type: 'object',
         properties: {
@@ -896,7 +896,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getFileFolder',
-      description: 'Get detailed information about a specific file folder.',
+      description: 'Get file folder details',
       inputSchema: {
         type: 'object',
         properties: {
@@ -910,7 +910,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_listVerifiedDomains',
-      description: 'List all verified domains and their authentication status. Shows which domains are verified and authenticated for sending emails, including DKIM, SPF, and DMARC status.',
+      description: 'List verified domains',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -918,7 +918,7 @@ export function createReadTools(client: MailchimpClient): Tool[] {
     },
     {
       name: 'mc_getVerifiedDomain',
-      description: 'Get detailed authentication status for a specific domain including verification status, DKIM status, SPF status, DMARC status, and DNS record requirements.',
+      description: 'Get domain authentication status',
       inputSchema: {
         type: 'object',
         properties: {

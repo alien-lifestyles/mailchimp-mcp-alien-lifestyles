@@ -221,15 +221,6 @@ function writeEnvFile(env: Record<string, string>): void {
     '',
     '# Server Configuration',
     env.MAILCHIMP_MASK_PII !== undefined ? `MAILCHIMP_MASK_PII=${env.MAILCHIMP_MASK_PII}` : 'MAILCHIMP_MASK_PII=true',
-    `TRANSPORT_MODE=${env.TRANSPORT_MODE || 'stdio'}`,
-    '',
-    '# Optional: Required only if you want to send campaigns',
-    env.CONFIRM_SEND ? `CONFIRM_SEND=${env.CONFIRM_SEND}` : '# CONFIRM_SEND=I_KNOW_WHAT_IM_DOING',
-    '',
-    '# Optional: Image Generation API Keys',
-    env.OPENAI_API_KEY ? `OPENAI_API_KEY=${env.OPENAI_API_KEY}` : '# OPENAI_API_KEY=your_openai_api_key_here',
-    env.STABILITY_API_KEY ? `STABILITY_API_KEY=${env.STABILITY_API_KEY}` : '# STABILITY_API_KEY=your_stability_api_key_here',
-    env.REPLICATE_API_KEY ? `REPLICATE_API_KEY=${env.REPLICATE_API_KEY}` : '# REPLICATE_API_KEY=your_replicate_api_key_here',
   ];
   
   writeFileSync(ENV_FILE, lines.join('\n') + '\n', 'utf-8');
@@ -243,9 +234,6 @@ app.get('/api/config', (req, res) => {
     mailchimpServerPrefix: env.MAILCHIMP_SERVER_PREFIX || 'us9',
     licenseKey: env.MAILCHIMP_LICENSE_KEY ? maskLicenseKey(env.MAILCHIMP_LICENSE_KEY) : '',
     maskPii: env.MAILCHIMP_MASK_PII !== 'false',
-    openaiApiKey: env.OPENAI_API_KEY ? maskValue(env.OPENAI_API_KEY) : '',
-    stabilityApiKey: env.STABILITY_API_KEY ? maskValue(env.STABILITY_API_KEY) : '',
-    replicateApiKey: env.REPLICATE_API_KEY ? maskValue(env.REPLICATE_API_KEY) : '',
   });
 });
 
@@ -284,9 +272,6 @@ app.post('/api/config', (req, res) => {
     
     console.log('newEnv.MAILCHIMP_LICENSE_KEY:', newEnv.MAILCHIMP_LICENSE_KEY || '(not set)');
     if (req.body.maskPii !== undefined) newEnv.MAILCHIMP_MASK_PII = req.body.maskPii ? 'true' : 'false';
-    if (req.body.openaiApiKey) newEnv.OPENAI_API_KEY = req.body.openaiApiKey;
-    if (req.body.stabilityApiKey) newEnv.STABILITY_API_KEY = req.body.stabilityApiKey;
-    if (req.body.replicateApiKey) newEnv.REPLICATE_API_KEY = req.body.replicateApiKey;
     
     writeEnvFile(newEnv);
     

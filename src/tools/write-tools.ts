@@ -3,7 +3,6 @@ import { z } from 'zod';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { MailchimpClient } from '../lib/mailchimp-client.js';
 import { validateMTLTemplate } from '../lib/mtl-validation.js';
-import { generateImage, getEmailImageSize } from '../lib/image-generation.js';
 
 // Mailchimp IDs are alphanumeric with hyphens, typically 10-40 chars
 const mailchimpIdRegex = /^[a-zA-Z0-9-]{1,64}$/;
@@ -13,17 +12,12 @@ const mailchimpIdSchema = z.string().min(1).max(64).regex(mailchimpIdRegex, {
 });
 
 export function createWriteTools(
-  client: MailchimpClient,
-  imageGenApiKeys?: {
-    openai?: string;
-    stability?: string;
-    replicate?: string;
-  }
+  client: MailchimpClient
 ): Tool[] {
   return [
     {
       name: 'mc_createCampaign',
-      description: 'Create a new Mailchimp campaign. Requires type, recipients, and settings.',
+      description: 'Create a new Mailchimp campaign',
       inputSchema: {
         type: 'object',
         properties: {
@@ -71,7 +65,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_setCampaignContent',
-      description: 'Set the content for a campaign. Requires campaignId and either plain_text or html.',
+      description: 'Set campaign content',
       inputSchema: {
         type: 'object',
         properties: {
@@ -93,7 +87,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_sendCampaign',
-      description: 'Send a campaign immediately. Requires CONFIRM_SEND=I_KNOW_WHAT_IM_DOING environment variable.',
+      description: 'Send a campaign immediately',
       inputSchema: {
         type: 'object',
         properties: {
@@ -107,7 +101,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_createTemplate',
-      description: 'Create a new custom-coded template in Mailchimp. Validates HTML for MTL (Mailchimp Template Language) compliance. See: https://mailchimp.com/help/getting-started-with-mailchimps-template-language/',
+      description: 'Create template with MTL validation',
       inputSchema: {
         type: 'object',
         properties: {
@@ -129,7 +123,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_updateTemplate',
-      description: 'Update an existing template. Validates HTML for MTL compliance.',
+      description: 'Update template',
       inputSchema: {
         type: 'object',
         properties: {
@@ -151,7 +145,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_deleteTemplate',
-      description: 'Delete a template from Mailchimp.',
+      description: 'Delete template',
       inputSchema: {
         type: 'object',
         properties: {
@@ -165,7 +159,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_uploadFile',
-      description: 'Upload a file (image, PDF, etc.) to Mailchimp\'s File Manager. Returns file URL for use in templates.',
+      description: 'Upload file to File Manager',
       inputSchema: {
         type: 'object',
         properties: {
@@ -187,7 +181,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_createTemplateFolder',
-      description: 'Create a folder for organizing templates.',
+      description: 'Create template folder',
       inputSchema: {
         type: 'object',
         properties: {
@@ -201,7 +195,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_createFileFolder',
-      description: 'Create a folder in Mailchimp\'s File Manager for organizing files.',
+      description: 'Create file folder',
       inputSchema: {
         type: 'object',
         properties: {
@@ -214,49 +208,8 @@ export function createWriteTools(
       },
     },
     {
-      name: 'mc_generateAndUploadImage',
-      description: 'Generate an image using AI (OpenAI DALL-E, Stability AI, or Replicate) and automatically upload it to Mailchimp File Manager. Returns the Mailchimp file URL for use in templates.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          prompt: {
-            type: 'string',
-            description: 'The image generation prompt describing what image to create',
-          },
-          provider: {
-            type: 'string',
-            enum: ['openai', 'stability', 'replicate'],
-            description: 'Image generation provider: openai (DALL-E 3), stability (Stable Diffusion), or replicate (various models)',
-          },
-          name: {
-            type: 'string',
-            description: 'Name for the uploaded file in Mailchimp (default: generated from prompt)',
-          },
-          size: {
-            type: 'string',
-            enum: ['1024x1024', '1024x1792', '1792x1024', '512x512', '768x768'],
-            description: 'Image size. For email templates, use 1024x1024 (square), 1792x1024 (wide), or 1024x1792 (tall)',
-          },
-          aspectRatio: {
-            type: 'string',
-            enum: ['square', 'wide', 'tall'],
-            description: 'Email-optimized aspect ratio (overrides size if provided)',
-          },
-          folder_id: {
-            type: 'string',
-            description: 'Optional: The folder ID to place the file in',
-          },
-          model: {
-            type: 'string',
-            description: 'Optional: Specific model for Replicate (e.g., stability-ai/sdxl)',
-          },
-        },
-        required: ['prompt', 'provider'],
-      },
-    },
-    {
       name: 'mc_createAudience',
-      description: 'Create a new Mailchimp audience (list). Requires name, contact information, permission reminder, and campaign defaults.',
+      description: 'Create a new Mailchimp audience',
       inputSchema: {
         type: 'object',
         properties: {
@@ -332,7 +285,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_updateAudience',
-      description: 'Update an existing Mailchimp audience (list). Update name, contact information, permission reminder, campaign defaults, or email type option. All fields are optional - only include fields you want to update.',
+      description: 'Update audience settings',
       inputSchema: {
         type: 'object',
         properties: {
@@ -410,7 +363,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_createSegment',
-      description: 'Create a new segment for an audience. Can create static segments (tag-like) or saved segments (with conditions).',
+      description: 'Create segment',
       inputSchema: {
         type: 'object',
         properties: {
@@ -442,7 +395,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_addTagToMember',
-      description: 'Add or remove tags from a member. Tags help organize and segment your audience members.',
+      description: 'Add or remove tags from member',
       inputSchema: {
         type: 'object',
         properties: {
@@ -479,7 +432,7 @@ export function createWriteTools(
     },
     {
       name: 'mc_createMergeField',
-      description: 'Create a new merge field (custom field) for an audience. Merge fields store additional information about members.',
+      description: 'Create merge field',
       inputSchema: {
         type: 'object',
         properties: {
@@ -535,13 +488,7 @@ export function createWriteTools(
 export async function handleWriteTool(
   name: string,
   args: unknown,
-  client: MailchimpClient,
-  confirmSend: string,
-  imageGenApiKeys?: {
-    openai?: string;
-    stability?: string;
-    replicate?: string;
-  }
+  client: MailchimpClient
 ): Promise<unknown> {
   switch (name) {
     case 'mc_createCampaign': {
@@ -587,11 +534,6 @@ export async function handleWriteTool(
     }
 
     case 'mc_sendCampaign': {
-      if (confirmSend !== 'I_KNOW_WHAT_IM_DOING') {
-        throw new Error(
-          'Sending campaigns requires CONFIRM_SEND=I_KNOW_WHAT_IM_DOING environment variable'
-        );
-      }
       const schema = z.object({
         campaignId: mailchimpIdSchema,
       });
@@ -734,72 +676,6 @@ export async function handleWriteTool(
       });
       const params = schema.parse(args);
       return await client.post('/file-manager/folders', { name: params.name });
-    }
-
-    case 'mc_generateAndUploadImage': {
-      if (!imageGenApiKeys) {
-        throw new Error('Image generation API keys not configured. Set OPENAI_API_KEY, STABILITY_API_KEY, or REPLICATE_API_KEY environment variables.');
-      }
-
-      const schema = z.object({
-        prompt: z.string().min(1).max(1000),
-        provider: z.enum(['openai', 'stability', 'replicate']),
-        name: z.string().min(1).max(255).optional(),
-        size: z.enum(['1024x1024', '1024x1792', '1792x1024', '512x512', '768x768']).optional(),
-        aspectRatio: z.enum(['square', 'wide', 'tall']).optional(),
-        folder_id: mailchimpIdSchema.optional(),
-        model: z.string().optional(),
-      });
-      const params = schema.parse(args);
-
-      // Determine image size
-      let size = params.size;
-      if (params.aspectRatio && !size) {
-        size = getEmailImageSize(params.aspectRatio) as any;
-      }
-      size = size || '1024x1024';
-
-      // Generate image
-      const generatedImage = await generateImage(
-        {
-          prompt: params.prompt,
-          provider: params.provider,
-          size: size as any,
-          model: params.model,
-        },
-        imageGenApiKeys
-      );
-
-      // Generate filename if not provided
-      const filename = params.name || 
-        `${params.prompt.slice(0, 50).replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${Date.now()}.${generatedImage.format}`;
-
-      // Upload to Mailchimp
-      const uploadBody: {
-        name: string;
-        file_data: string;
-        folder_id?: string;
-      } = {
-        name: filename,
-        file_data: generatedImage.base64,
-      };
-
-      if (params.folder_id) {
-        uploadBody.folder_id = params.folder_id;
-      }
-
-      const uploadResult = await client.post('/file-manager/files', uploadBody);
-
-      // Return combined result with generation info
-      return {
-        ...uploadResult,
-        generation_info: {
-          prompt: params.prompt,
-          provider: params.provider,
-          size: `${generatedImage.width}x${generatedImage.height}`,
-          format: generatedImage.format,
-        },
-      };
     }
 
     case 'mc_createAudience': {
