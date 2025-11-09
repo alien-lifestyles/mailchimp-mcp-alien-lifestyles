@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { logger } from './logger.js';
+import { metrics } from './metrics.js';
 
 const RateLimitError = z.object({
   status: z.literal(429),
